@@ -6,8 +6,6 @@
 #define IGNORE_MOD_TAP_INTERRUPT
 // #define PERMISSIVE_HOLD
 
-// #define DEBOUNCE 10
-// #define DEBOUNCE 5
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCING_DELAY 5
 #define AUTO_SHIFT_TIMEOUT 145

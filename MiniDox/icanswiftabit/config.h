@@ -11,6 +11,6 @@
 #define AUTO_SHIFT_TIMEOUT 145
 
 #define ONESHOT_TAP_TOGGLE 5  
-#define ONESHOT_TIMEOUT 365  
+#define ONESHOT_TIMEOUT 365 
 
 #endif

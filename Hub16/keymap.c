@@ -15,6 +15,8 @@
  */
 #include QMK_KEYBOARD_H
 
+bool toggleMic = false;
+bool toggleCam = false;
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT( /* Base */
           KC_MUTE,   KC_MPLY,
@@ -25,9 +27,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [1] = LAYOUT( /* Meeting Controls */
         _______,           _______,
-    LSFT(KC_F18), _______, _______, _______,
-    LCTL(KC_F18), _______, _______, _______,
-    LALT(KC_F18), _______, _______, _______,
+    LSFT(KC_F18) /*  Toggle mic  */ , _______, _______, _______,
+    LCTL(KC_F18) /*  Toggle cam  */, _______, _______, _______,
+    LALT(KC_F18) /*  Toggle both */, _______, _______, _______,
     LGUI(KC_F18), _______, _______, _______
   ),
   [2] = LAYOUT(
@@ -46,16 +48,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-const rgblight_segment_t PROGMEM layer0_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-        {0,16,0}
+const rgblight_segment_t PROGMEM base_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+        {0, 12, 0}
     );
 const rgblight_segment_t PROGMEM meeting_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-        {0,16,HSV_GREEN}
+        {0, 5, HSV_GREEN},
+        {6, 12, HSV_GREEN}
+    );
+const rgblight_segment_t PROGMEM mic_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+        {0, 5, HSV_RED}
+    );
+const rgblight_segment_t PROGMEM cam_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+        {6, 12, HSV_RED}
+    );
+const rgblight_segment_t PROGMEM micAndCam_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+        {0, 12, HSV_RED}
     );
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-        layer0_layer,
-        meeting_layer
+        base_layer,
+        meeting_layer,
+        mic_layer,
+        cam_layer,
+        micAndCam_layer
     );
 
 layer_state_t default_layer_state_set_user(layer_state_t state) {
@@ -64,7 +79,18 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
+    rgblight_set_layer_state(0, layer_state_cmp(state, 0));
     rgblight_set_layer_state(1, layer_state_cmp(state, 1));
+
+    if (rgblight_get_layer_state(1)) {
+        // Restore state 
+        rgblight_set_layer_state(2,toggleMic);
+        rgblight_set_layer_state(3,toggleCam);
+    } else { 
+        // Allow base_layer rgb exclusively
+        rgblight_set_layer_state(2, layer_state_cmp(state, 2));
+        rgblight_set_layer_state(3, layer_state_cmp(state, 3));
+    }
     return state;
 }
 
@@ -77,14 +103,41 @@ void keyboard_post_init_user(void) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     switch (keycode) {
+
+        // Mic
         case LSFT(KC_F18):
         if (record->event.pressed) {
-            rgblight_setrgb_range(255, 0, 0, 0, 16);
-        } else {
-            rgblight_setrgb_range(0, 255, 0,0, 16);
-        }
+            toggleMic = !toggleMic;
+        } else {}
+        break;
+        
+        // Cam
+        case LCTL(KC_F18):
+        if (record->event.pressed) {
+            toggleCam = !toggleCam;
+        } else {}
+        break;
+
+        // Both
+        case LALT(KC_F18):
+        if (record->event.pressed) {
+            if (!toggleCam || !toggleMic) {
+                toggleCam = true;
+                toggleMic = true;    
+            } else {
+                toggleCam = !toggleCam;
+                toggleMic = !toggleMic;
+            }
+            
+        } else {}
         break;
     }
+
+    if (rgblight_get_layer_state(1)) {
+        rgblight_set_layer_state(2,toggleMic);
+        rgblight_set_layer_state(3,toggleCam);
+    }
+
     return true;
 }
 

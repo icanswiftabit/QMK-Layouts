@@ -15,56 +15,76 @@
  */
 #include QMK_KEYBOARD_H
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [0] = LAYOUT( /* Base */
-          KC_MUTE,   KC_MPLY,
-    KC_LSHIFT, KC_7, KC_8, KC_9,
-    KC_LCTRL, KC_4, KC_5, KC_6,
-    KC_LALT, KC_1, KC_2, KC_3,
-    KC_LGUI, TG(1), KC_0, KC_DOLLAR
-  ),
-  [1] = LAYOUT( /* Meeting Controls */
-        _______,           _______,
-    LSFT(KC_F18), _______, _______, _______,
-    LCTL(KC_F18), _______, _______, _______,
-    LALT(KC_F18), _______, _______, _______,
-    LGUI(KC_F18), _______, _______, _______
-  ),
-  [2] = LAYOUT(
-        _______,           _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______
-  ),
-  [3] = LAYOUT(
-        _______,           _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______,
-    _______, _______, _______, _______
-  ),
+bool toggleMic = false;
+bool toggleAppverk = false;
+bool spaceNavigation = false;
+
+enum {
+    TD_DOT_COMMA,
 };
 
-const rgblight_segment_t PROGMEM layer0_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-        {0,16,0}
+// Tap Dance definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    // Tap once for Escape, twice for Caps Lock
+    [TD_DOT_COMMA] = ACTION_TAP_DANCE_DOUBLE(KC_DOT, KC_COMMA),
+};
+
+// Remeber your keyboard is rotated 45°
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+  [0] = LAYOUT(
+    KC_MUTE,   KC_MPLY,
+    KC_BACKSPACE, KC_KP_7, KC_KP_8, KC_KP_9,
+    KC_TAB, KC_KP_4, KC_KP_5, KC_KP_6,
+    KC_NO, KC_KP_1, KC_KP_2, KC_KP_3,
+    TG(1), KC_KP_ENTER, KC_0, TD(TD_DOT_COMMA)
+    ),
+
+  [1] = LAYOUT(
+    KC_MUTE, KC_MPLY,
+    KC_F12, LSFT(KC_F12), LCTL(KC_F12), LALT(KC_F12),
+    KC_F13, LSFT(KC_F13), LCTL(KC_F13), LALT(KC_F13),
+    KC_F15, LSFT(KC_F15), HYPR(KC_F15), LALT(KC_F15),
+    KC_TRANSPARENT, LSFT(KC_F16), LCTL(KC_F16), _______
+    ),
+
+  [2] = LAYOUT(
+    _______,           _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______
+    ),
+
+  [3] = LAYOUT(
+    _______,           _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______,
+    _______, _______, _______, _______
+    ),
+};
+
+
+// ------RGB------
+const rgblight_segment_t PROGMEM base_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {0, 12, 0}
     );
-const rgblight_segment_t PROGMEM meeting_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-        {0,16,HSV_GREEN}
+const rgblight_segment_t PROGMEM mic_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+    {0, 12, HSV_RED}
     );
+// const rgblight_segment_t PROGMEM appverk_layer[] = RGBLIGHT_LAYER_SEGMENTS(
+//     {0, 12, HSV_WHITE}
+//     );
+
 
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-        layer0_layer,
-        meeting_layer
+    base_layer,
+    mic_layer
+    // appverk_layer
     );
 
 layer_state_t default_layer_state_set_user(layer_state_t state) {
     rgblight_set_layer_state(0, layer_state_cmp(state, 0));
-    return state;
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    rgblight_set_layer_state(1, layer_state_cmp(state, 1));
     return state;
 }
 
@@ -74,32 +94,69 @@ void keyboard_post_init_user(void) {
     layer_state_set_user(layer_state);
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+// --------------
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case LSFT(KC_F18):
-        if (record->event.pressed) {
-            rgblight_setrgb_range(255, 0, 0, 0, 16);
-        } else {
-            rgblight_setrgb_range(0, 255, 0,0, 16);
-        }
+        // case LALT(KC_F12):
+        //     if (record->event.pressed) {
+        //         toggleAppverk = false;
+        //         toggleNord = !toggleNord;
+        //     } else {}
+        //     break;
+        // case LALT(KC_F13):
+        //     if (record->event.pressed) {
+        //         toggleNord = false;
+        //         toggleAppverk = !toggleAppverk;
+        //     } else {}
+        //     break;
+        // case HYPR(KC_F18):
+        //     if (record->event.pressed) {
+        //         toggleAppverk = false;
+        //         toggleNord = false;
+        //     } else {}
+        //     break;
+        case LALT(KC_F12):
+            if (record->event.pressed) {
+                spaceNavigation = !spaceNavigation;
+            }
         break;
+        case LCTL(KC_F12):
+                if (record->event.pressed) {
+                toggleMic = !toggleMic;
+            }
+            break;
     }
+    
+    rgblight_set_layer_state(1, toggleMic);
+    // rgblight_set_layer_state(2,toggleAppverk);
     return true;
 }
 
-void encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) { /* Left Encoder */
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    clockwise = !clockwise; // Encoders are inverted
+    /* Left Encoder */
+    if (index == 0) { 
         if (clockwise) {
             tap_code(KC_VOLU);
         } else {
             tap_code(KC_VOLD);
         }
-    } else if (index == 1) { /* Right Encoder */
+        /* Right Encoder */
+    } else if (index == 1) { 
         if (clockwise) {
-            tap_code(KC_MNXT);
+            if (spaceNavigation) {
+                tap_code16(C(KC_RIGHT));
+            } else {
+                tap_code(KC_BRIU);
+            }
         } else {
-            tap_code(KC_MPRV);
+            if (spaceNavigation) {
+                tap_code16(C(KC_LEFT));
+            } else {
+                tap_code(KC_BRID);
+            }
         }
     }
+    return true;
 }

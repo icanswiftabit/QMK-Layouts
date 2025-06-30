@@ -22,26 +22,23 @@
 static void print_status_narrow(void) {
     // Print current mode
     oled_write_P(PSTR("\n\n"), false);
- 
-    bool SWAPPED_CMD;
-    if (keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui) {
-        SWAPPED_CMD = true;
-    } else {
-        SWAPPED_CMD = false;
-    }
-    oled_write_ln_P(PSTR("SWAP"), SWAPPED_CMD);
 
-    oled_write_P(PSTR("\n\n"), false);
+    bool isSwapped = keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
+    bool isGameActive = get_highest_layer(layer_state) == 3;
 
-    switch (get_highest_layer(layer_state)) {
-    case 3:
+    if (isSwapped && isGameActive) {
+        oled_write_ln_P(PSTR("SWAP"), false);
         oled_write_ln_P(PSTR("GAME"), false);
-        break;
-    default:
-        oled_write_P(PSTR("\n\n"), false);
-        break;
+    } else if (isSwapped) {
+        oled_write_ln_P(PSTR("SWAP"), false);
+        oled_write_P(PSTR("\n"), false);
+    } else if (isGameActive) {
+        oled_write_P(PSTR("\n"), false);
+        oled_write_ln_P(PSTR("GAME"), false);
+    } else {
+        oled_write_P(PSTR("\n"), false);
+        oled_write_P(PSTR("\n"), false);
     }
-
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {

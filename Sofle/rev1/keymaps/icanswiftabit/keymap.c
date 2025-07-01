@@ -48,18 +48,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [1] = LAYOUT(
-  S(A(G(KC_F))),   KC_BRIGHTNESS_DOWN,KC_BRIGHTNESS_UP,LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE,KC_MEDIA_NEXT_TRACK,KC_AUDIO_MUTE, KC_AUDIO_VOL_DOWN,KC_AUDIO_VOL_UP,_______,
+  S(A(G(KC_F))), _______, _______,LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK,_______, _______, _______, _______,
   LGUI(KC_UP),   LALT(LGUI(KC_QUOTE)),LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),   LGUI(KC_QUOTE), TD(DANCE_0),                      KC_MS_BTN1, KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RIGHT, KC_MS_BTN2,
-  LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
+  LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, _______, _______, _______, _______, _______,
   _______,  _______, _______, _______, _______, LALT(KC_F16),                      _______,    _______, _______,  _______, _______,  _______,
-                 _______, _______,_______,_______,_______, _______,      _______,  _______, _______, _______, _______,
+                 KC_MICLOCK, _______,_______,_______,_______, _______,      _______,  _______, _______, _______, _______,
                                                               _______, _______, _______, _______, _______
 ),
 
 [2] = LAYOUT(
   _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,
   _______,    _______,    _______,    _______,    _______,    _______,     _______,    _______,    _______,    _______,    TG(3),  LGUI(LCTL(KC_Q)),
-  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, KC_MICLOCK,
+  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, _______,
   _______,  _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
                        _______,_______, _______, _______, _______, _______,       _______, _______, _______, _______, QK_BOOT,
                                                               _______, _______, _______, _______, _______
@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [0] = { ENCODER_CCW_CW(KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
-    [1] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
+    [1] = { ENCODER_CCW_CW(KC_BRIGHTNESS_UP, KC_BRIGHTNESS_DOWN), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
     [2] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
     [3] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
 };

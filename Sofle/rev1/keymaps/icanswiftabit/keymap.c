@@ -24,7 +24,10 @@
 #define KC_MICLOCK LALT(LGUI(LCTL(LSFT(KC_F19))))
 
 enum custom_keycodes {
-  ARROW_MACRO,
+  ARROW_MACRO = SAFE_RANGE,
+  LOCK_SCREEN,
+  FLIP_TABLE,
+  PUT_TABLE,
 };
 
 enum tap_dance_codes {
@@ -48,7 +51,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 [1] = LAYOUT(
-  S(A(G(KC_F))), _______, _______,LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK,_______, _______, _______, _______,
+  S(A(G(KC_F))), LCAG(KC_G), HYPR(KC_G), LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK,_______, _______, _______, _______,
   LGUI(KC_UP),   LALT(LGUI(KC_QUOTE)),LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),   LGUI(KC_QUOTE), TD(DANCE_0),                      KC_MS_BTN1, KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RIGHT, KC_MS_BTN2,
   LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, _______, _______, _______, _______, _______,
   _______,  _______, _______, _______, _______, LALT(KC_F16),                      _______,    _______, _______,  _______, _______,  _______,
@@ -58,9 +61,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [2] = LAYOUT(
   _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,
-  _______,    _______,    _______,    _______,    _______,    _______,     _______,    _______,    _______,    _______,    TG(3),  LGUI(LCTL(KC_Q)),
-  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, _______,
-  _______,  _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
+  _______,    _______,    _______,    _______,    _______,    _______,     _______,    _______,    _______,    _______,    TG(3), LOCK_SCREEN,
+  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, FLIP_TABLE,
+  _______,  _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, PUT_TABLE,
                        _______,_______, _______, _______, _______, _______,       _______, _______, _______, _______, QK_BOOT,
                                                               _______, _______, _______, _______, _______
 ),
@@ -84,7 +87,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 
 const uint16_t PROGMEM combo0[] = { KC_W, KC_F, COMBO_END};
 const uint16_t PROGMEM combo1[] = { KC_U, KC_Y, COMBO_END};
-const uint16_t PROGMEM combo2[] = { KC_W, KC_F, KC_P, COMBO_END};       
+const uint16_t PROGMEM ARROW_COMBO[] = { KC_W, KC_F, KC_P, COMBO_END};       
 const uint16_t PROGMEM combo3[] = { KC_S, KC_T, COMBO_END};
 const uint16_t PROGMEM combo4[] = { KC_N, KC_E, COMBO_END};
 const uint16_t PROGMEM combo5[] = { LGUI(LSFT(KC_P)), KC_RIGHT_ALT, COMBO_END};
@@ -93,7 +96,7 @@ const uint16_t PROGMEM combo6[] = { KC_ESCAPE, KC_A, COMBO_END};
 combo_t key_combos[COMBO_COUNT] = {
     COMBO(combo0, KC_MINUS),
     COMBO(combo1, KC_EQUAL),
-    COMBO(combo2, ARROW_MACRO),
+    COMBO(ARROW_COMBO, ARROW_MACRO),
     COMBO(combo3, KC_LBRC),
     COMBO(combo4, KC_RBRC),
     COMBO(combo5, RGUI(KC_SPACE)),
@@ -101,14 +104,39 @@ combo_t key_combos[COMBO_COUNT] = {
 };
 
 uint8_t mod_state;
+bool isSwapped;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   mod_state = get_mods(); 
   switch (keycode) {
+    case FLIP_TABLE:
+        if (record->event.pressed) {
+            SEND_STRING("(╯°□°）╯︵ ┻━┻");
+        }
+        return false;
+
+    case PUT_TABLE:
+        if (record->event.pressed) {
+            SEND_STRING("┬─┬ノ( º _ ºノ)");
+        }
+        return false;
+
     case ARROW_MACRO:
-    if (record->event.pressed) {
-      SEND_STRING(SS_TAP(X_MINUS)SS_DELAY(100)  SS_LSFT(SS_TAP(X_DOT)));
-    }
-    break;
+        if (record->event.pressed) {
+            SEND_STRING(SS_TAP(X_MINUS)SS_DELAY(100)  SS_LSFT(SS_TAP(X_DOT)));
+        }
+        return false;
+
+    case LOCK_SCREEN:
+        isSwapped = keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
+        if (record->event.pressed) {
+            if (isSwapped) {
+                tap_code16(LGUI(KC_L));
+            } else {
+                tap_code16(LGUI(LCTL(KC_Q)));
+            }
+        }
+        return false;
+       
 
     case KC_SLSH:
         if (record->event.pressed) {

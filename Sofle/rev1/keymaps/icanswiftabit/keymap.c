@@ -85,22 +85,39 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [3] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
 };
 
-const uint16_t PROGMEM combo0[] = { KC_W, KC_F, COMBO_END};
-const uint16_t PROGMEM combo1[] = { KC_U, KC_Y, COMBO_END};
-const uint16_t PROGMEM ARROW_COMBO[] = { KC_W, KC_F, KC_P, COMBO_END};       
-const uint16_t PROGMEM combo3[] = { KC_S, KC_T, COMBO_END};
-const uint16_t PROGMEM combo4[] = { KC_N, KC_E, COMBO_END};
-const uint16_t PROGMEM combo5[] = { LGUI(LSFT(KC_P)), KC_RIGHT_ALT, COMBO_END};
-const uint16_t PROGMEM combo6[] = { KC_ESCAPE, KC_A, COMBO_END};
+bool combo_should_trigger(uint16_t combo_index, combo_t * combo, uint16_t keycode, keyrecord_t * record) {
+  if (get_highest_layer(layer_state|default_layer_state) == 3) {
+    return false;
+  }
+  return true;
+}
 
-combo_t key_combos[COMBO_COUNT] = {
-    COMBO(combo0, KC_MINUS),
-    COMBO(combo1, KC_EQUAL),
-    COMBO(ARROW_COMBO, ARROW_MACRO),
-    COMBO(combo3, KC_LBRC),
-    COMBO(combo4, KC_RBRC),
-    COMBO(combo5, RGUI(KC_SPACE)),
-    COMBO(combo6, KC_BSPC),
+enum combo_events {
+  MINUS_COMBO,
+  EQUAL_COMBO,
+  ARROW_COMBO,
+  LBRC_COMBO,
+  RBRC_COMBO,
+  SPOTLIGHT_COMBO,
+  BACKSPACE_COMBO
+};
+
+const uint16_t PROGMEM minus_combo[] = { KC_W, KC_F, COMBO_END};
+const uint16_t PROGMEM equal_combo[] = { KC_U, KC_Y, COMBO_END};
+const uint16_t PROGMEM arrow_combo[] = { KC_W, KC_F, KC_P, COMBO_END};       
+const uint16_t PROGMEM lbrc_combo[] = { KC_S, KC_T, COMBO_END};
+const uint16_t PROGMEM rbrc_combo[] = { KC_N, KC_E, COMBO_END};
+const uint16_t PROGMEM spotlight_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, COMBO_END};
+const uint16_t PROGMEM backspace_combo[] = { KC_ESCAPE, KC_A, COMBO_END};
+
+combo_t key_combos[] = {
+    [MINUS_COMBO] = COMBO_ACTION(minus_combo),
+    [EQUAL_COMBO] = COMBO_ACTION(equal_combo),
+    [ARROW_COMBO] = COMBO_ACTION(arrow_combo),
+    [LBRC_COMBO] = COMBO_ACTION(lbrc_combo),
+    [RBRC_COMBO] = COMBO_ACTION(rbrc_combo),
+    [SPOTLIGHT_COMBO] = COMBO(spotlight_combo, RGUI(KC_SPACE)),
+    [BACKSPACE_COMBO] = COMBO_ACTION(backspace_combo)
 };
 
 uint8_t mod_state;
@@ -120,12 +137,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
 
-    case ARROW_MACRO:
-        if (record->event.pressed) {
-            SEND_STRING(SS_TAP(X_MINUS)SS_DELAY(100)  SS_LSFT(SS_TAP(X_DOT)));
-        }
-        return false;
-
     case LOCK_SCREEN:
         isSwapped = keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
         if (record->event.pressed) {
@@ -136,7 +147,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return false;
-       
 
     case KC_SLSH:
         if (record->event.pressed) {
@@ -150,33 +160,60 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         }
         return true;
-    case KC_LBRC:
-        if (record->event.pressed) {
-            if (mod_state & MOD_MASK_SHIFT) {
-                del_mods(MOD_MASK_SHIFT);
-                tap_code16(KC_LBRC);
-                set_mods(mod_state);
-            } else {
-                tap_code16(S(KC_LBRC));
-            }
-            return false;
-        }
-        return true;
-    case KC_RBRC:
-        if (record->event.pressed) {
-            if (mod_state & MOD_MASK_SHIFT) {
-                del_mods(MOD_MASK_SHIFT);
-                tap_code16(KC_RBRC);
-                set_mods(mod_state);
-            } else {
-                tap_code16(S(KC_RBRC));
-            }
-            return false;
-        }
-        return true;
   }
   return true;
 }
+
+void process_combo_event(uint16_t combo_index, bool pressed) {
+  if (get_highest_layer(layer_state|default_layer_state) == 3) return;
+  mod_state = get_mods();
+  switch (combo_index) {
+  case MINUS_COMBO:
+    if (pressed) {
+      tap_code16(KC_MINS);
+    }
+    break;
+
+  case EQUAL_COMBO:
+    if (pressed) {
+        tap_code16(KC_EQL);
+    }
+    break;
+  case ARROW_COMBO:
+    if (pressed) {
+      tap_code16(KC_MINS);
+      tap_code16(S(KC_DOT));
+    }
+    break;
+  case LBRC_COMBO:
+    if (pressed) {
+      if (mod_state & MOD_MASK_SHIFT) {
+        del_mods(MOD_MASK_SHIFT);
+        tap_code16(KC_LBRC);
+        set_mods(mod_state);
+      } else {
+        tap_code16(S(KC_LBRC));
+      }
+    }
+    break;
+  case RBRC_COMBO:
+    if (pressed) {
+      if (mod_state & MOD_MASK_SHIFT) {
+        del_mods(MOD_MASK_SHIFT);
+        tap_code16(KC_RBRC);
+        set_mods(mod_state);
+      } else {
+        tap_code16(S(KC_RBRC));
+      }
+    }
+    break;
+  case BACKSPACE_COMBO: 
+    if (pressed) {
+      tap_code16(KC_BSPC);
+    }
+  }
+}
+
 
 typedef struct {
     bool is_press_action;

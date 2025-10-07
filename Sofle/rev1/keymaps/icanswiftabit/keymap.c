@@ -22,6 +22,8 @@
 #include "oled.c"
 
 #define KC_MICLOCK LALT(LGUI(LCTL(LSFT(KC_F19))))
+#define COMBO_SHOULD_TRIGGER
+
 
 enum custom_keycodes {
   ARROW_MACRO = SAFE_RANGE,
@@ -86,10 +88,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 
 bool combo_should_trigger(uint16_t combo_index, combo_t * combo, uint16_t keycode, keyrecord_t * record) {
-  if (get_highest_layer(layer_state|default_layer_state) == 3) {
-    return false;
-  }
-  return true;
+    if (get_highest_layer(layer_state|default_layer_state) == 3) return false;
+    return true;
 }
 
 enum combo_events {
@@ -165,7 +165,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
-  if (get_highest_layer(layer_state|default_layer_state) == 3) return;
   mod_state = get_mods();
   switch (combo_index) {
   case MINUS_COMBO:
@@ -179,12 +178,14 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         tap_code16(KC_EQL);
     }
     break;
+
   case ARROW_COMBO:
     if (pressed) {
       tap_code16(KC_MINS);
       tap_code16(S(KC_DOT));
     }
     break;
+
   case LBRC_COMBO:
     if (pressed) {
       if (mod_state & MOD_MASK_SHIFT) {
@@ -196,6 +197,7 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
       }
     }
     break;
+
   case RBRC_COMBO:
     if (pressed) {
       if (mod_state & MOD_MASK_SHIFT) {
@@ -207,10 +209,12 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
       }
     }
     break;
+
   case BACKSPACE_COMBO: 
     if (pressed) {
       tap_code16(KC_BSPC);
     }
+    break;
   }
 }
 

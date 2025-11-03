@@ -24,7 +24,7 @@ enum {
 };
 
 // Tap Dance definitions
-qk_tap_dance_action_t tap_dance_actions[] = {
+tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Escape, twice for Caps Lock
     [TD_DOT_COMMA] = ACTION_TAP_DANCE_DOUBLE(KC_DOT, KC_COMMA),
 };
@@ -32,15 +32,15 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 // Remeber your keyboard is rotated 45°
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT(
-    KC_MUTE,   KC_MPLY,
+    KC_TRANSPARENT,   KC_TRANSPARENT,
     KC_BACKSPACE, KC_KP_7, KC_KP_8, KC_KP_9,
     KC_TAB, KC_KP_4, KC_KP_5, KC_KP_6,
-    KC_NO, KC_KP_1, KC_KP_2, KC_KP_3,
-    TG(1), KC_KP_ENTER, KC_0, TD(TD_DOT_COMMA)
+    KC_NUM, KC_KP_1, KC_KP_2, KC_KP_3,
+    KC_ENTER/*TG(1)*/, KC_KP_ENTER, KC_0, TD(TD_DOT_COMMA)
     ),
 
   [1] = LAYOUT(
-    KC_MUTE, KC_MPLY,
+    KC_TRANSPARENT, KC_TRANSPARENT,
     KC_F12, LSFT(KC_F12), LCTL(KC_F12), LALT(KC_F12),
     KC_F13, LSFT(KC_F13), LCTL(KC_F13), LALT(KC_F13),
     KC_F15, LSFT(KC_F15), HYPR(KC_F15), LALT(KC_F15),
@@ -134,29 +134,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
-    clockwise = !clockwise; // Encoders are inverted
-    /* Left Encoder */
-    if (index == 0) { 
-        if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
-        /* Right Encoder */
-    } else if (index == 1) { 
-        if (clockwise) {
-            if (spaceNavigation) {
-                tap_code16(C(KC_RIGHT));
-            } else {
-                tap_code(KC_BRIU);
-            }
-        } else {
-            if (spaceNavigation) {
-                tap_code16(C(KC_LEFT));
-            } else {
-                tap_code(KC_BRID);
-            }
-        }
-    }
-    return true;
+    // clockwise = !clockwise; // Encoders are inverted
+    // /* Left Encoder */
+    // if (index == 0) { 
+    //     if (clockwise) {
+    //         tap_code(KC_MNXT);
+    //     } else {
+    //         tap_code(KC_MPRV);
+    //     }
+    //     /* Right Encoder */
+    // } else if (index == 1) { 
+    //     if (clockwise) {
+    //         // if (spaceNavigation) {
+    //         //     tap_code16(C(KC_RIGHT));
+    //         // } else {
+    //         tap_code(KC_BRIU);
+    //         // }
+    //     } else {
+    //         // if (spaceNavigation) {
+    //         //     tap_code16(C(KC_LEFT));
+    //         // } else {
+    //         tap_code(KC_BRID);
+    //         // }
+    //     }
+    // }
+    return false;
 }

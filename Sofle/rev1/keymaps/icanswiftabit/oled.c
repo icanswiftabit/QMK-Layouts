@@ -27,14 +27,14 @@ static void print_status_narrow(void) {
     bool isGameActive = get_highest_layer(layer_state) == 3;
 
     if (isSwapped && isGameActive) {
-        oled_write_ln_P(PSTR("SWAP"), false);
         oled_write_ln_P(PSTR("GAME"), false);
-    } else if (isSwapped) {
         oled_write_ln_P(PSTR("SWAP"), false);
-        oled_write_P(PSTR("\n"), false);
     } else if (isGameActive) {
-        oled_write_P(PSTR("\n"), false);
         oled_write_ln_P(PSTR("GAME"), false);
+        oled_write_P(PSTR("\n"), false);
+    } else if (isSwapped) {
+        oled_write_P(PSTR("\n"), false);
+        oled_write_ln_P(PSTR("SWAP"), false);
     } else {
         oled_write_P(PSTR("\n"), false);
         oled_write_P(PSTR("\n"), false);

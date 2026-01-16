@@ -257,7 +257,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LGUI,  KC_RALT,  KC_LCTL,                                KC_SPC,                                 KC_RCMD, KC_RALT, TG(_WIN_GAME),  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [_WIN_FN] = LAYOUT_75_ansi(
-        TG(_WIN_GAME),  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,   KC_VOLU,  _______,  _______,  RGB_TOG,
+        _______,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FLXP,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,   KC_VOLU,  _______,  _______,  RGB_TOG,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______,  _______, RGB_MOD,
         _______,  _______,  LSFT(LCTL(KC_TAB)), LCTL(KC_TAB),  KC_MS_BTN1,  _______,  _______,  _______,  _______,  _______,  _______,  _______,   _______, _______, RGB_RMOD,
         _______,  _______, _______, _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______,  _______,

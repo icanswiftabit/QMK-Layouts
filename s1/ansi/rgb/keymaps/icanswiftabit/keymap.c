@@ -33,29 +33,29 @@ enum {
 
 bool rgb_matrix_indicators_user(void) {
   if (layer_state_is(_WIN_GAME)) {
-      rgb_matrix_set_color(36, 255, 0, 0); // Esc
-      rgb_matrix_set_color(37, 0, 255, 0); // Tab
-      rgb_matrix_set_color(39, 0, 255, 0); // W
-      rgb_matrix_set_color(52, 0, 255, 0); // A
-      rgb_matrix_set_color(53, 0, 255, 0); // S
-      rgb_matrix_set_color(54, 0, 255, 0); // D
-      rgb_matrix_set_color(55, 0, 255, 0); // ;
-      rgb_matrix_set_color(65, 0, 255, 0); // Z
-      rgb_matrix_set_color(78, 0, 255, 0); // Space
-      rgb_matrix_set_color(79, 0, 255, 0); // L
-      rgb_matrix_set_color(80, 0, 255, 0); // M
+      rgb_matrix_set_color(38, 255, 0, 0); // Esc
+      rgb_matrix_set_color(39, 0, 255, 0); // Tab
+      rgb_matrix_set_color(41, 0, 255, 0); // W
+      rgb_matrix_set_color(54, 0, 255, 0); // A
+      rgb_matrix_set_color(55, 0, 255, 0); // S
+      rgb_matrix_set_color(56, 0, 255, 0); // D
+      rgb_matrix_set_color(57, 0, 255, 0); // ;
+      rgb_matrix_set_color(67, 0, 255, 0); // Z
+      rgb_matrix_set_color(79, 0, 255, 0); // Space
+      rgb_matrix_set_color(80, 0, 255, 0); // L
+      rgb_matrix_set_color(81, 0, 255, 0); // M
   } else {
-      rgb_matrix_set_color(36, 0, 0, 0); // Esc
-      rgb_matrix_set_color(37, 0, 0, 0); // Tab
-      rgb_matrix_set_color(39, 0, 0, 0); // W
-      rgb_matrix_set_color(52, 0, 0, 0); // A
-      rgb_matrix_set_color(53, 0, 0, 0); // S
-      rgb_matrix_set_color(54, 0, 0, 0); // D
-      rgb_matrix_set_color(55, 0, 0, 0); // ; 
-      rgb_matrix_set_color(65, 0, 0, 0); // Z
-      rgb_matrix_set_color(78, 0, 0, 0); // Space
-      rgb_matrix_set_color(79, 0, 0, 0); // L
-      rgb_matrix_set_color(80, 0, 0, 0); // M
+      rgb_matrix_set_color(38, 0, 0, 0); // Esc
+      rgb_matrix_set_color(39, 0, 0, 0); // Tab
+      rgb_matrix_set_color(41, 0, 0, 0); // W
+      rgb_matrix_set_color(54, 0, 0, 0); // A
+      rgb_matrix_set_color(55, 0, 0, 0); // S
+      rgb_matrix_set_color(56, 0, 0, 0); // D
+      rgb_matrix_set_color(57, 0, 0, 0); // ; 
+      rgb_matrix_set_color(67, 0, 0, 0); // Z
+      rgb_matrix_set_color(79, 0, 0, 0); // Space
+      rgb_matrix_set_color(80, 0, 0, 0); // L
+      rgb_matrix_set_color(81, 0, 0, 0); // M
   }
   return false;
 }
@@ -265,10 +265,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,  _______,  _______,                                _______,                                _______,  _______, XXXXXXX,  _______,  _______,  _______),
 
     [_WIN_GAME] = LAYOUT_75_ansi(
-      TG(_WIN_GAME),   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,          KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_PSCR,  KC_DEL,   HYPR(KC_F19),
-      KC_GRV,       KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,           KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   XXXXXXX,            KC_VOLU,
-      KC_P,         KC_Y,     KC_U,     XXXXXXX,  XXXXXXX,  KC_ESC,   KC_TAB,         KC_Q,     KC_W,     KC_E,     KC_R,     KC_P,     KC_LBRC,  KC_RBRC,            KC_VOLD,
-      KC_H,         KC_J,     KC_K,     XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_LEFT_SHIFT,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,               KC_ENT,             KC_MUTE,
-      KC_LSFT,                KC_N,     XXXXXXX,  XXXXXXX,  KC_K,     KC_Z,           KC_X,     KC_C,     KC_V,     KC_B,     KC_COMM,  KC_DOT,   KC_UP,              KC_END,
-      KC_LGUI,      KC_RALT,  KC_LCTL,                                KC_M,                                         KC_L,     KC_SPC,   XXXXXXX,  KC_LEFT,  KC_DOWN,  KC_RGHT),
+      TG(_WIN_GAME),   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_PSCR,  KC_DEL,   HYPR(KC_F19),
+      KC_GRV,          KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   XXXXXXX,            KC_VOLU,
+      KC_P,            KC_Y,     KC_U,     XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_ESC,   KC_TAB,         KC_Q,     KC_W,     KC_E,     KC_R,     KC_P,               KC_VOLD,
+      KC_H,            KC_J,     KC_K,     XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_LEFT_SHIFT,  KC_A,     KC_S,     KC_D,     KC_F,                         KC_MUTE,
+      KC_LSFT,                   KC_N,     XXXXXXX,  XXXXXXX,  XXXXXXX,  XXXXXXX,  KC_K,     KC_Z,           KC_X,     KC_C,     KC_V,     KC_B,     KC_UP,              KC_END,
+      KC_LGUI,         KC_RALT,  KC_LCTL,                                KC_M,                                         XXXXXXX,     KC_M,   KC_L,     KC_SPC,  KC_DOWN,  KC_RGHT),
 };

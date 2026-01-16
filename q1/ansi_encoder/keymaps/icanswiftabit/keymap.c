@@ -38,29 +38,29 @@ enum {
 
 bool rgb_matrix_indicators_user(void) {
     if (layer_state_is(WIN_GAME)) {
-        rgb_matrix_set_color(38, 255, 0, 0); // Esc
-        rgb_matrix_set_color(39, 0, 255, 0); // Tab
-        rgb_matrix_set_color(41, 0, 255, 0); // W
-        rgb_matrix_set_color(54, 0, 255, 0); // A
-        rgb_matrix_set_color(55, 0, 255, 0); // S
-        rgb_matrix_set_color(56, 0, 255, 0); // D
-        rgb_matrix_set_color(57, 0, 255, 0); // ;
-        rgb_matrix_set_color(67, 0, 255, 0); // Z
+        rgb_matrix_set_color(37, 255, 0, 0); // Esc
+        rgb_matrix_set_color(38, 0, 255, 0); // Tab
+        rgb_matrix_set_color(40, 0, 255, 0); // W
+        rgb_matrix_set_color(53, 0, 255, 0); // A
+        rgb_matrix_set_color(54, 0, 255, 0); // S
+        rgb_matrix_set_color(55, 0, 255, 0); // D
+        rgb_matrix_set_color(56, 0, 255, 0); // ;
+        rgb_matrix_set_color(66, 0, 255, 0); // Z
+        rgb_matrix_set_color(77, 0, 255, 0); // M
+        rgb_matrix_set_color(78, 0, 255, 0); // L
         rgb_matrix_set_color(79, 0, 255, 0); // Space
-        rgb_matrix_set_color(80, 0, 255, 0); // L
-        rgb_matrix_set_color(81, 0, 255, 0); // M
     } else {
-        rgb_matrix_set_color(38, 0, 0, 0); // Esc
-        rgb_matrix_set_color(39, 0, 0, 0); // Tab
-        rgb_matrix_set_color(41, 0, 0, 0); // W
-        rgb_matrix_set_color(54, 0, 0, 0); // A
-        rgb_matrix_set_color(55, 0, 0, 0); // S
-        rgb_matrix_set_color(56, 0, 0, 0); // D
-        rgb_matrix_set_color(57, 0, 0, 0); // ;
-        rgb_matrix_set_color(67, 0, 0, 0); // Z
+        rgb_matrix_set_color(37, 0, 0, 0); // Esc
+        rgb_matrix_set_color(38, 0, 0, 0); // Tab
+        rgb_matrix_set_color(40, 0, 0, 0); // W
+        rgb_matrix_set_color(53, 0, 0, 0); // A
+        rgb_matrix_set_color(54, 0, 0, 0); // S
+        rgb_matrix_set_color(55, 0, 0, 0); // D
+        rgb_matrix_set_color(56, 0, 0, 0); // ;
+        rgb_matrix_set_color(66, 0, 0, 0); // Z
+        rgb_matrix_set_color(77, 0, 0, 0); // M
+        rgb_matrix_set_color(78, 0, 0, 0); // L
         rgb_matrix_set_color(79, 0, 0, 0); // Space
-        rgb_matrix_set_color(80, 0, 0, 0); // L
-        rgb_matrix_set_color(81, 0, 0, 0); // M
     }
     return false;
 }
@@ -209,7 +209,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MAC_BASE] = LAYOUT_ansi_82(
         C(G(KC_Q)),          KC_BRID,  KC_BRIU,  LALT(KC_F7),  XXXXXXX,  DM_REC1,  DM_PLY1,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  LGUI(KC_BSPC),       HYPR(KC_F19),
-        LT(MAC_FN, KC_GRV),  KC_1,     KC_2,     KC_3,         KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     XXXXXXX,  XXXXXXX,  KC_BSPC,             LGUI(KC_UP),
+        LT(MAC_FN, KC_GRV),  KC_1,     KC_2,     KC_3,         KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     XXXXXXX,  XXXXXXX,  XXXXXXX,             LGUI(KC_UP),
         KC_TAB,              KC_Q,     KC_W,     KC_F,         KC_P,     KC_G,     KC_J,     KC_L,     KC_U,     KC_Y,     KC_SCLN,  KC_BSPC,  KC_BSLS,  XXXXXXX,             LGUI(KC_DOWN),
         KC_ESC,              KC_A,     KC_R,     KC_S,         KC_T,     KC_D,     KC_H,     KC_N,     KC_E,     KC_I,     KC_O,     KC_QUOT,            KC_ENT,              LGUI(KC_LEFT),
         SC_LSPO,                       KC_Z,     KC_X,         KC_C,     KC_V,     KC_B,     KC_K,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            SC_RSPC,             KC_UP,

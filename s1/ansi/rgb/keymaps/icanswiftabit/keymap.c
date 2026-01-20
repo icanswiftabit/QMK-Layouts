@@ -204,7 +204,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MAC_BASE] = LAYOUT_75_ansi(
-        C(G(KC_Q)),           KC_BRID,  KC_BRIU,  LALT(KC_F7),  XXXXXXX,  DM_REC1,  DM_PLY1,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_SNAP,           LGUI(KC_BSPC),  HYPR(KC_F19),
+        C(G(KC_Q)),           KC_BRID,  KC_BRIU,  LALT(KC_F7),  LCAG(KC_G),  DM_REC1,  DM_PLY1,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  KC_SNAP,           LGUI(KC_BSPC),  HYPR(KC_F19),
         LT(_MAC_FN, KC_GRV),  KC_1,     KC_2,     KC_3,         KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     XXXXXXX,  XXXXXXX,  XXXXXXX,           LGUI(KC_UP),
         KC_TAB,               KC_Q,     KC_W,     KC_F,         KC_P,     KC_G,     KC_J,     KC_L,     KC_U,     KC_Y,               KC_SCLN,  KC_BSPC,  KC_BSLS,           XXXXXXX,        LGUI(KC_DOWN),
         KC_ESC,               KC_A,     KC_R,     KC_S,         KC_T,     KC_D,     KC_H,     KC_N,     KC_E,     KC_I,               KC_O,     KC_QUOT,  KC_ENT,                            LGUI(KC_LEFT),

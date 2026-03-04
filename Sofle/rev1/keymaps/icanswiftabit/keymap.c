@@ -24,7 +24,6 @@
 #define KC_MICLOCK LALT(LGUI(LCTL(LSFT(KC_F19))))
 #define COMBO_SHOULD_TRIGGER
 
-
 enum custom_keycodes {
   ARROW_MACRO = SAFE_RANGE,
   LOCK_SCREEN,
@@ -55,7 +54,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [1] = LAYOUT(
   S(A(G(KC_F))), LCAG(KC_G), HYPR(KC_G), LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK,_______, _______, _______, _______,
   LGUI(KC_UP),   LALT(LGUI(KC_QUOTE)),LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),   LGUI(KC_QUOTE), TD(DANCE_0),                      KC_MS_BTN1, KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RIGHT, KC_MS_BTN2,
-  LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, _______, _______, _______, _______, _______,
+  LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
   _______,  _______, _______, _______, _______, LALT(KC_F16),                      _______,    _______, _______,  _______, _______,  _______,
   KC_MICLOCK, _______,_______,_______,_______, _______,      _______,  _______, _______, _______, _______,
                                                               _______, _______, _______, _______, _______
@@ -64,8 +63,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [2] = LAYOUT(
   _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                       KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,
   _______,    _______,    _______,    _______,    _______,    _______,     _______,    _______,    _______,    _______,    TG(3), LOCK_SCREEN,
-  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, FLIP_TABLE,
-  _______,  _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, PUT_TABLE,
+  _______, _______,   _______, _______,  _______, _______,                       _______, _______, _______, _______, CG_TOGG, _______,
+  _______,  _______, _______, _______, _______, _______,                      _______, _______, _______, _______, _______, _______,
   _______,_______, _______, _______, _______, _______,       _______, _______, _______, _______, QK_BOOT,
                                                               _______, _______, _______, _______, _______
 ),
@@ -99,7 +98,9 @@ enum combo_events {
   LBRC_COMBO,
   RBRC_COMBO,
   SPOTLIGHT_COMBO,
-  BACKSPACE_COMBO
+  BACKSPACE_COMBO,
+  BACK_HISTORY_COMBO,
+  FORWARD_HISTORY_COMBO
 };
 
 const uint16_t PROGMEM minus_combo[] = { KC_W, KC_F, COMBO_END};
@@ -109,6 +110,8 @@ const uint16_t PROGMEM lbrc_combo[] = { KC_S, KC_T, COMBO_END};
 const uint16_t PROGMEM rbrc_combo[] = { KC_N, KC_E, COMBO_END};
 const uint16_t PROGMEM spotlight_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, COMBO_END};
 const uint16_t PROGMEM backspace_combo[] = { KC_ESCAPE, KC_A, COMBO_END};
+const uint16_t PROGMEM back_history_combo[] = { KC_Z, KC_X, COMBO_END};
+const uint16_t PROGMEM forward_history_combo[] = { KC_X, KC_C, COMBO_END};
 
 combo_t key_combos[] = {
     [MINUS_COMBO] = COMBO_ACTION(minus_combo),
@@ -117,7 +120,9 @@ combo_t key_combos[] = {
     [LBRC_COMBO] = COMBO_ACTION(lbrc_combo),
     [RBRC_COMBO] = COMBO_ACTION(rbrc_combo),
     [SPOTLIGHT_COMBO] = COMBO(spotlight_combo, RGUI(KC_SPACE)),
-    [BACKSPACE_COMBO] = COMBO_ACTION(backspace_combo)
+    [BACKSPACE_COMBO] = COMBO_ACTION(backspace_combo),
+    [BACK_HISTORY_COMBO] = COMBO_ACTION(back_history_combo),
+    [FORWARD_HISTORY_COMBO] = COMBO_ACTION(forward_history_combo)
 };
 
 uint8_t mod_state;
@@ -125,18 +130,6 @@ bool isSwapped;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   mod_state = get_mods(); 
   switch (keycode) {
-    case FLIP_TABLE:
-        if (record->event.pressed) {
-            SEND_STRING("(╯°□°）╯︵ ┻━┻");
-        }
-        return false;
-
-    case PUT_TABLE:
-        if (record->event.pressed) {
-            SEND_STRING("┬─┬ノ( º _ ºノ)");
-        }
-        return false;
-
     case LOCK_SCREEN:
         isSwapped = keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
         if (record->event.pressed) {
@@ -213,6 +206,17 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
   case BACKSPACE_COMBO: 
     if (pressed) {
       tap_code16(KC_BSPC);
+    }
+    break;
+  case BACK_HISTORY_COMBO:
+    if (pressed) {
+        tap_code16(LGUI(LCTL((KC_LEFT))));
+    }
+    break;
+
+  case FORWARD_HISTORY_COMBO:
+    if (pressed) {
+        tap_code16(LGUI(LCTL((KC_RIGHT))));
     }
     break;
   }

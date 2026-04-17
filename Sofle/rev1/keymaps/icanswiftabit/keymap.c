@@ -100,7 +100,8 @@ enum combo_events {
   SPOTLIGHT_COMBO,
   BACKSPACE_COMBO,
   BACK_HISTORY_COMBO,
-  FORWARD_HISTORY_COMBO
+  FORWARD_HISTORY_COMBO,
+  LLM_WINDOW_COMOBO
 };
 
 const uint16_t PROGMEM minus_combo[] = { KC_W, KC_F, COMBO_END};
@@ -112,6 +113,7 @@ const uint16_t PROGMEM spotlight_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, COMBO_EN
 const uint16_t PROGMEM backspace_combo[] = { KC_ESCAPE, KC_A, COMBO_END};
 const uint16_t PROGMEM back_history_combo[] = { KC_Z, KC_X, COMBO_END};
 const uint16_t PROGMEM forward_history_combo[] = { KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM llm_window_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, KC_RGUI, COMBO_END};
 
 combo_t key_combos[] = {
     [MINUS_COMBO] = COMBO_ACTION(minus_combo),
@@ -122,7 +124,8 @@ combo_t key_combos[] = {
     [SPOTLIGHT_COMBO] = COMBO(spotlight_combo, RGUI(KC_SPACE)),
     [BACKSPACE_COMBO] = COMBO_ACTION(backspace_combo),
     [BACK_HISTORY_COMBO] = COMBO_ACTION(back_history_combo),
-    [FORWARD_HISTORY_COMBO] = COMBO_ACTION(forward_history_combo)
+    [FORWARD_HISTORY_COMBO] = COMBO_ACTION(forward_history_combo),
+    [LLM_WINDOW_COMOBO] = COMBO_ACTION(llm_window_combo)
 };
 
 uint8_t mod_state;
@@ -217,6 +220,11 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
   case FORWARD_HISTORY_COMBO:
     if (pressed) {
         tap_code16(LGUI(LCTL((KC_RIGHT))));
+    }
+    break;
+  case LLM_WINDOW_COMOBO:
+    if (pressed) {
+        tap_code16(KC_F18);
     }
     break;
   }

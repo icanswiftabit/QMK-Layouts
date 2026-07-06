@@ -29,7 +29,8 @@ enum custom_keycodes {
     MC_XO,
     MC_FORK,
     MC_TMUX_COMMAND,
-    LOCK_SCREEN
+    LOCK_SCREEN,
+    GAME_TOGGLE
 };
 
 enum tap_dances {
@@ -79,10 +80,36 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
 
 static uint8_t mod_state;
 
-static void update_control_gui_swap_led(void) {
+enum {
+    STATUS_LED_BLINK_PERIOD_MS = 1000,
+    STATUS_LED_BLINK_ON_MS     = 250
+};
+
+static bool is_game_layer_active(void) {
+    return get_highest_layer(default_layer_state) == _GAME;
+}
+
+static bool is_cg_swapped(void) {
+    return keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
+}
+
+static void write_caps_led(bool on) {
 #ifdef LED_CAPS_LOCK_PIN
-    gpio_write_pin(LED_CAPS_LOCK_PIN, keymap_config.swap_lctl_lgui ? LED_PIN_ON_STATE : !LED_PIN_ON_STATE);
+    gpio_write_pin(LED_CAPS_LOCK_PIN, on ? LED_PIN_ON_STATE : !LED_PIN_ON_STATE);
 #endif
+}
+
+static void update_status_led(void) {
+    bool cg   = is_cg_swapped();
+    bool game = is_game_layer_active();
+
+    if (cg && game) {
+        write_caps_led((timer_read() % STATUS_LED_BLINK_PERIOD_MS) < STATUS_LED_BLINK_ON_MS);
+    } else if (cg) {
+        write_caps_led(true);
+    } else {
+        write_caps_led(false);
+    }
 }
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
@@ -123,11 +150,12 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
 }
 
 void matrix_scan_user(void) {
-    update_control_gui_swap_led();
+    update_status_led();
 }
 
 bool led_update_user(led_t led_state) {
-    update_control_gui_swap_led();
+    (void)led_state;
+    update_status_led();
     return false;
 }
 
@@ -147,6 +175,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
+        case GAME_TOGGLE:
+            if (is_cg_swapped()) {
+                set_single_default_layer(_GAME);
+            }
+            return false;
         case MC_ZED:
             SEND_STRING("!zed ." SS_TAP(X_ENTER));
             return false;
@@ -237,8 +270,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FN] = LAYOUT_wired(
         KC_NO,   C(KC_F13), LCA(KC_F16), TD(TD_XCODE_ZED_OPEN), LAG(KC_F16), A(KC_F7), KC_NO,   KC_NO,   MC_ZED,  MC_XO,   MC_FORK, KC_NO, KC_NO,   QK_BOOT, QK_BOOT, KC_TRNS,
-        DF(_GAME), C(KC_F16), KC_NO,       KC_TRNS,   KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
-        CG_TOGG, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13),   A(KC_F16), KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
+        CG_TOGG, C(KC_F16), KC_NO,       KC_TRNS,   KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
+        GAME_TOGGLE, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13),   A(KC_F16), KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
         LAG(KC_QUOT), G(KC_QUOT), KC_TRNS,           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
     ),
@@ -247,7 +280,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         DF(_BASE),   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_A,    KC_S,    KC_D,    KC_TRNS, KC_F,    KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_K,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_TRNS, KC_LALT,
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_K,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_LALT, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS,                   KC_SPC,                                      KC_M,    KC_L,             KC_SPC,  KC_LGUI, KC_TRNS
     )
 };

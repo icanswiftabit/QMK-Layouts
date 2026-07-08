@@ -279,7 +279,7 @@ LockQ=C(G(Q)).
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_wired(
-        MO(_FN),  KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,    KC_9,    KC_0,    KC_MPLY,  KC_MNXT, KC_BSLS, KC_BSPC, LOCK_SCREEN,
+        LOCK_SCREEN,  KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,    KC_9,    KC_0,    KC_MPLY,  KC_MNXT, KC_BSLS, KC_BSPC, KC_NO,
         KC_TAB,  KC_Q,    KC_W,    KC_F,   KC_P,   KC_G,   KC_J,   KC_L,   KC_U,    KC_Y,    KC_SCLN, KC_NO,      KC_NO,        KC_BSLS, KC_VOLU,
         KC_ESC,  KC_A,    KC_R,    KC_S,   KC_T,   KC_D,   KC_H,   KC_N,   KC_E,    KC_I,    KC_O,    KC_QUOT,    KC_NO,      KC_ENT,  KC_VOLD,
         SC_LSPO, KC_NUBS, KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,   KC_K,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH,    SC_RSPC,      KC_UP,   KC_MUTE,
@@ -287,7 +287,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_FN] = LAYOUT_wired(
-        KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, MC_ZED,  MC_XO,   MC_FORK, KC_TRNS, KC_TRNS, QK_BOOT, QK_BOOT, KC_TRNS,
+        QK_BOOT, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, MC_ZED,  MC_XO,   MC_FORK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         CG_TOGG, KC_TRNS,   KC_TRNS,     LCA(KC_F16), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),

@@ -46,7 +46,8 @@ enum combo_events {
     ARROW_COMBO,
     COMMAND_PALETTE_COMBO,
     BACKSPACE_COMBO,
-    GRAVE_COMBO
+    GRAVE_COMBO,
+    FN_COMBO
 };
 
 const uint16_t PROGMEM lbrc_combo[]            = {KC_S, KC_T, COMBO_END};
@@ -57,6 +58,7 @@ const uint16_t PROGMEM arrow_combo[]           = {KC_W, KC_F, KC_P, COMBO_END};
 const uint16_t PROGMEM command_palette_combo[] = {KC_RGUI, KC_RALT, COMBO_END};
 const uint16_t PROGMEM backspace_combo[]       = {KC_ESC, KC_A, COMBO_END};
 const uint16_t PROGMEM grave_combo[]           = {KC_Z, SC_LSPO, COMBO_END};
+const uint16_t PROGMEM fn_combo[]              = {KC_A, KC_R, COMBO_END};
 
 combo_t key_combos[] = {
     [LBRC_COMBO]            = COMBO_ACTION(lbrc_combo),
@@ -66,7 +68,8 @@ combo_t key_combos[] = {
     [ARROW_COMBO]           = COMBO_ACTION(arrow_combo),
     [COMMAND_PALETTE_COMBO] = COMBO(command_palette_combo, RGUI(RSFT(KC_P))),
     [BACKSPACE_COMBO]       = COMBO(backspace_combo, KC_BSPC),
-    [GRAVE_COMBO]           = COMBO(grave_combo, KC_GRV)
+    [GRAVE_COMBO]           = COMBO(grave_combo, KC_GRV),
+    [FN_COMBO]              = COMBO_ACTION(fn_combo)
 };
 
 tap_dance_action_t tap_dance_actions[] = {
@@ -82,7 +85,8 @@ static uint8_t mod_state;
 
 enum {
     STATUS_LED_BLINK_PERIOD_MS = 1000,
-    STATUS_LED_BLINK_ON_MS     = 250
+    STATUS_LED_BLINK_ON_MS     = 125,
+    STATUS_LED_BLINK_GAP_MS    = 125
 };
 
 static bool is_game_layer_active(void) {
@@ -104,7 +108,10 @@ static void update_status_led(void) {
     bool game = is_game_layer_active();
 
     if (cg && game) {
-        write_caps_led((timer_read() % STATUS_LED_BLINK_PERIOD_MS) < STATUS_LED_BLINK_ON_MS);
+        uint16_t elapsed = timer_read() % STATUS_LED_BLINK_PERIOD_MS;
+        write_caps_led(elapsed < STATUS_LED_BLINK_ON_MS ||
+                       (elapsed >= STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS &&
+                        elapsed < 2 * STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS));
     } else if (cg) {
         write_caps_led(true);
     } else {
@@ -144,6 +151,14 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
                 } else {
                     tap_code16(S(KC_RBRC));
                 }
+            }
+            break;
+
+        case FN_COMBO:
+            if (pressed) {
+                layer_on(_FN);
+            } else {
+                layer_off(_FN);
             }
             break;
     }
@@ -230,13 +245,13 @@ Layer diagrams:
 
 [_FN]
 ,--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------+------.
-|   NO   | Slack  | iTerm  |Xcode/Zd|  Fork  | 1Pass  |  NO  |  NO  | !zed | !xo  |!fork |  NO  |  NO  | Boot | Boot |      |
+|        | MEH(F) | G(Down)| G(Up)  | C-b:   |LCAG(G)|      |      | !zed | !xo  |!fork |      |      | Boot | Boot |      |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-| Game   | Safari |   NO   |        |        |        |      |      |      |      |      |      |      |      | Bri+ |
+|CG_TOGG |        |        | iTerm  |  Zed   | Xcode |      |      |      |      |      |      |      |      | Bri+ |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-|CG_TOGG | Msg/Tg |  Mail  | Things |        |        |      |      |      |      |      |      |      |      | Bri- |
+|  Game  |        |        | Slack  |  Fork  | Safari|      |      |      |      |      |      |      |      | Bri- |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-|        |        | MEH(F) | G(Down)| G(Up)  | C-b:   |LCAG(G)|     |      |      |      |      | Ms1  | MsUp |HyprF19|
+|        |        |        | Msg/Tg |  Mail  | Things |1Pass |     |      |      |      |      | Ms1  | MsUp |HyprF19|
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
 | LAG(') |  G(')  |        |             Enter             |        |        | MsLft  | MsDwn  | MsRgt  |
 `--------+--------+--------+-------------------------------+--------+--------+--------+--------+--------'
@@ -254,14 +269,17 @@ Layer diagrams:
 |        |        |        |             Space             |   M    |   L    | Space  | LGui   |        |
 `--------+--------+--------+-------------------------------+--------+--------+--------+--------+--------'
 
-Legend: Slack=C(F13), iTerm=LCA(F16), Xcode/Zd=KC_F17/S(KC_F17),
-Fork=LAG(F16), Safari=C(F16), Msg/Tg=S(KC_F12)/KC_F13,
-Mail=S(F13), Things=A(F16), LockQ=C(G(Q)).
+Legend:
+Apps: Slack=C(F13), iTerm=LCA(F16), Zed=S(F17), Xcode=F17,
+Fork=LAG(F16), Safari=C(F16), Msg/Tg=S(F12)/F13, Mail=S(F13),
+Things=A(F16), 1Pass=A(F7).
+Utilities: MEH(F)=S(A(G(F))), C-b:=G(B) then S(;), LCAG(G)=LCAG(G),
+LockQ=C(G(Q)).
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_wired(
-        MO(_FN),  KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,    KC_9,    KC_0,    KC_NO,  KC_NO, KC_BSLS, KC_BSPC, LOCK_SCREEN,
+        MO(_FN),  KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,    KC_9,    KC_0,    KC_MPLY,  KC_MNXT, KC_BSLS, KC_BSPC, LOCK_SCREEN,
         KC_TAB,  KC_Q,    KC_W,    KC_F,   KC_P,   KC_G,   KC_J,   KC_L,   KC_U,    KC_Y,    KC_SCLN, KC_NO,      KC_NO,        KC_BSLS, KC_VOLU,
         KC_ESC,  KC_A,    KC_R,    KC_S,   KC_T,   KC_D,   KC_H,   KC_N,   KC_E,    KC_I,    KC_O,    KC_QUOT,    KC_NO,      KC_ENT,  KC_VOLD,
         SC_LSPO, KC_NUBS, KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,   KC_K,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH,    SC_RSPC,      KC_UP,   KC_MUTE,
@@ -269,10 +287,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_FN] = LAYOUT_wired(
-        KC_NO,   C(KC_F13), LCA(KC_F16), TD(TD_XCODE_ZED_OPEN), LAG(KC_F16), A(KC_F7), KC_NO,   KC_NO,   MC_ZED,  MC_XO,   MC_FORK, KC_NO, KC_NO,   QK_BOOT, QK_BOOT, KC_TRNS,
-        CG_TOGG, C(KC_F16), KC_NO,       KC_TRNS,   KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
-        GAME_TOGGLE, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13),   A(KC_F16), KC_TRNS,     KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
-        KC_TRNS,  KC_TRNS,   S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
+        KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, MC_ZED,  MC_XO,   MC_FORK, KC_TRNS, KC_TRNS, QK_BOOT, QK_BOOT, KC_TRNS,
+        CG_TOGG, KC_TRNS,   KC_TRNS,     LCA(KC_F16), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
+        GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
+        KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
         LAG(KC_QUOT), G(KC_QUOT), KC_TRNS,           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
     ),
 

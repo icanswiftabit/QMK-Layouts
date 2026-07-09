@@ -232,49 +232,59 @@ Layer diagrams:
 
 [_BASE]
 ,--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------.
-|   Fn   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |  9   |  0   |  NO  |  NO  |  \   | Bspc |LockQ |
+| LockQ* |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |  9   |  0   | MPLY | MNXT |    Bspc     |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|  Tab   |  Q   |  W   |  F   |  P   |  G   |  J   |  L   |  U   |  Y   |  ;   |  NO  |  NO  |  \   | Vol+ |
+|  Tab   |  Q   |  W-  |  F-  | P->  |  G   |  J   |  L   |  U=  |  Y=  |  ;   |  NO  |  NO  |  \   |      | Vol+ |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|  Esc   |  A   |  R   |  S   |  T   |  D   |  H   |  N   |  E   |  I   |  O   |  '   |  NO  |Enter | Vol- |
+| Esc+A  | A+R  | R+FN |  S{  |  T{  |  D   |  H   |  N}  |  E}  |  I   |  O   |  '   | Enter              | Vol- |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|  LSPO  | NUBS |  Z   |  X   |  C   |  V   |  B   |  K   |  M   |  ,   |  .   |  /?  | RSPC |  Up  | Mute |
+|    LSPO+`     |  Z`  |  X   |  C   |  V   |  B   |  K   |  M   |  ,   |  .   | ?//  | RSPC        |  Up  | Mute |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-| LCtrl  | LAlt   | LGui   |             Space             | RGui   | RAlt   | Left   | Down   | Right  |
-`--------+--------+--------+-------------------------------+--------+--------+--------+--------+--------'
+| LCtrl  | LAlt   | LGui   |     Space                      | RGui+P | RAlt+P |        | Left   | Down   | Right  |
+`--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
 
 [_FN]
 ,--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------+------.
-|        | MEH(F) | G(Down)| G(Up)  | C-b:   |LCAG(G)|      |      | !zed | !xo  |!fork |      |      | Boot | Boot |      |
+| Boot*  | Fetch  |  Pull  |  Push  | C-b:*  | Tests |       |      |!zed* | !xo* |!fork*|      |      |      |      |      |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-|CG_TOGG |        |        | iTerm  |  Zed   | Xcode |      |      |      |      |      |      |      |      | Bri+ |
+| CG*    |        |        | iTerm  |  Zed   | Xcode |       |      |      |      |      |      |      |     |       | Bri+ |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-|  Game  |        |        | Slack  |  Fork  | Safari|      |      |      |      |      |      |      |      | Bri- |
+| Game*  |  A+R => _FN     | Slack  |  Fork  | Safari|       |      |      |      |      |      |                    | Bri- |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-|        |        |        | Msg/Tg |  Mail  | Things |1Pass |     |      |      |      |      | Ms1  | MsUp |HyprF19|
+|                 |        | Msg/Tg |  Mail  | Things |1Pass |      |      |      |      |      | Ms1        | MsUp | Dark  |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-| LAG(') |  G(')  |        |             Enter             |        |        | MsLft  | MsDwn  | MsRgt  |
-`--------+--------+--------+-------------------------------+--------+--------+--------+--------+--------'
+|        | PrevSp | NextSp |     Enter                                |        |        |        | MsLft  | MsDwn  | MsRgt  |
+`--------+--------+--------+---------------------------------------------------+--------+--------+--------+--------+--------'
 
 [_GAME]
 ,--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------.
-|  Base  |      |      |      |      |      |      |      |      |      |      |      |      |      |      |      |
+|        |      |      |      |      |      |      |      |  1   |  2   |  3   |  4   |  5   |      |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|        |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |
+|        |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|        |      |      |      |      |      |      |      | LSft |  A   |  S   |  D   |      |  F   |      |
+|  Base  |      |      |      |      |      |      |      | LSft |  A   |  S   |  D   | F                  |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|        |      |      |      |      |      |      |  K   |  Z   |  X   |  C   |  V   |  B   |      | LAlt |
+|               |      |      |      |      |      |  K   |  Z   |  X   |  C   |  V   | B |           LAlt |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|        |        |        |             Space             |   M    |   L    | Space  | LGui   |        |
-`--------+--------+--------+-------------------------------+--------+--------+--------+--------+--------'
+|        |        |        |     Space                      |   M    |   L    |        | Space  | LGui   |        |
+`--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
 
 Legend:
 Apps: Slack=C(F13), iTerm=LCA(F16), Zed=S(F17), Xcode=F17,
-Fork=LAG(F16), Safari=C(F16), Msg/Tg=S(F12)/F13, Mail=S(F13),
-Things=A(F16), 1Pass=A(F7).
-Utilities: MEH(F)=S(A(G(F))), C-b:=G(B) then S(;), LCAG(G)=LCAG(G),
-LockQ=C(G(Q)).
+Fork=LAG(F16), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
+Mail=S(F13), Things=A(F16), 1Pass=A(F7).
+Utilities: Fetch=S(A(G(F))), Pull=G(Down), Push=G(Up),
+C-b:=G(B) then S(;), Tests=LCAG(G), PrevSp=LAG(KC_QUOT),
+NextSp=G(KC_QUOT), Dark=HYPR(F19).
+Macros: !zed="zed .", !xo="xo .", !fork="fork .".
+Combos shown inline: A+R=hold _FN, S+T={ or [ with Shift,
+N+E=} or ] with Shift, U+Y==, W+F=-, W+F+P=->,
+RGui+RAlt=G(S(P)), Esc+A=Backspace, Z+LSPO=Grave.
+Combos are disabled while _GAME is active.
+Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
+or G(L) when CG_TOGG is active; Game only sets _GAME as default when CG_TOGG
+is active; /? sends ? unshifted and / with Shift. Caps LED is on for CG_TOGG
+and blinks when CG_TOGG+_GAME.
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -282,7 +292,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         LOCK_SCREEN,  KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_6,   KC_7,   KC_8,    KC_9,    KC_0,    KC_MPLY,  KC_MNXT, KC_BSLS, KC_BSPC, KC_NO,
         KC_TAB,  KC_Q,    KC_W,    KC_F,   KC_P,   KC_G,   KC_J,   KC_L,   KC_U,    KC_Y,    KC_SCLN, KC_NO,      KC_NO,        KC_BSLS, KC_VOLU,
         KC_ESC,  KC_A,    KC_R,    KC_S,   KC_T,   KC_D,   KC_H,   KC_N,   KC_E,    KC_I,    KC_O,    KC_QUOT,    KC_NO,      KC_ENT,  KC_VOLD,
-        SC_LSPO, KC_NUBS, KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,   KC_K,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH,    SC_RSPC,      KC_UP,   KC_MUTE,
+        SC_LSPO, KC_NO, KC_Z,    KC_X,   KC_C,   KC_V,   KC_B,   KC_K,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH,    SC_RSPC,      KC_UP,   KC_MUTE,
         KC_LCTL, KC_LALT, KC_LGUI,          KC_SPC,                         KC_RGUI, KC_RALT,                  KC_LEFT, KC_DOWN, KC_RGHT
     ),
 
@@ -291,13 +301,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         CG_TOGG, KC_TRNS,   KC_TRNS,     LCA(KC_F16), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
-        LAG(KC_QUOT), G(KC_QUOT), KC_TRNS,           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
+        KC_TRNS, LAG(KC_QUOT),G(KC_QUOT),           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
     ),
 
     [_GAME] = LAYOUT_wired(
-        DF(_BASE),   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_1,    KC_2,    KC_3,   KC_4,   KC_5, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_A,    KC_S,    KC_D,    KC_TRNS, KC_F,    KC_TRNS,
+        DF(_BASE), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_A,    KC_S,    KC_D,    KC_TRNS, KC_F,    KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_K,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_LALT, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS,                   KC_SPC,                                      KC_M,    KC_L,             KC_SPC,  KC_LGUI, KC_TRNS
     )

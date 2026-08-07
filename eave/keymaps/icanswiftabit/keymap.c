@@ -83,12 +83,25 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
 }
 
 static uint8_t mod_state;
+static int8_t status_led_state = -1;
 
 enum {
     STATUS_LED_BLINK_PERIOD_MS = 1000,
     STATUS_LED_BLINK_ON_MS     = 125,
-    STATUS_LED_BLINK_GAP_MS    = 125
+    STATUS_LED_BLINK_GAP_MS    = 125,
+    STATUS_RGBLED_INDEX        = 10
 };
+
+void keyboard_pre_init_user(void) {
+    rgblight_config_t config = {.raw = 0};
+
+    config.enable = true;
+    config.mode   = RGBLIGHT_MODE_STATIC_LIGHT;
+
+    if (eeconfig_read_rgblight() != config.raw) {
+        eeconfig_update_rgblight(config.raw);
+    }
+}
 
 static bool is_game_layer_active(void) {
     return get_highest_layer(default_layer_state) == _GAME;
@@ -106,10 +119,18 @@ static void set_cg_swapped(bool swapped) {
     clear_keyboard();
 }
 
-static void write_caps_led(bool on) {
-#ifdef LED_CAPS_LOCK_PIN
-    gpio_write_pin(LED_CAPS_LOCK_PIN, on ? LED_PIN_ON_STATE : !LED_PIN_ON_STATE);
-#endif
+static void write_status_led(bool on) {
+    if (status_led_state == on) {
+        return;
+    }
+
+    if (on) {
+        rgblight_sethsv_at(0, 0, 128, STATUS_RGBLED_INDEX);
+    } else {
+        rgblight_sethsv_at(0, 0, 0, STATUS_RGBLED_INDEX);
+    }
+
+    status_led_state = on;
 }
 
 static void update_status_led(void) {
@@ -118,14 +139,29 @@ static void update_status_led(void) {
 
     if (cg && game) {
         uint16_t elapsed = timer_read() % STATUS_LED_BLINK_PERIOD_MS;
-        write_caps_led(elapsed < STATUS_LED_BLINK_ON_MS ||
-                       (elapsed >= STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS &&
-                        elapsed < 2 * STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS));
+        write_status_led(elapsed < STATUS_LED_BLINK_ON_MS ||
+                         (elapsed >= STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS &&
+                          elapsed < 2 * STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS));
     } else if (cg) {
-        write_caps_led(true);
+        write_status_led(true);
     } else {
-        write_caps_led(false);
+        write_status_led(false);
     }
+}
+
+static void initialize_status_led(void) {
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+    rgblight_sethsv_range(0, 0, 0, 0, RGBLIGHT_LED_COUNT);
+    status_led_state = -1;
+    update_status_led();
+}
+
+void keyboard_post_init_user(void) {
+    initialize_status_led();
+}
+
+void suspend_wakeup_init_user(void) {
+    initialize_status_led();
 }
 
 void process_combo_event(uint16_t combo_index, bool pressed) {

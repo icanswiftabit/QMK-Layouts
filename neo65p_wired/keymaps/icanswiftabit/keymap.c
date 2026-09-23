@@ -25,17 +25,16 @@ enum layers {
 };
 
 enum custom_keycodes {
-    MC_ZED = SAFE_RANGE,
-    MC_XO,
-    MC_FORK,
-    MC_TMUX_COMMAND,
+    MC_TMUX_COMMAND = SAFE_RANGE,
     LOCK_SCREEN,
-    GAME_TOGGLE
+    GAME_TOGGLE,
+    MACOS_BASE
 };
 
 enum tap_dances {
     TD_MESS_TELEGRAM_OPEN,
-    TD_XCODE_ZED_OPEN
+    TD_XCODE_ZED_OPEN,
+    TD_CLAUDE_ITERM_OPEN
 };
 
 enum combo_events {
@@ -74,7 +73,8 @@ combo_t key_combos[] = {
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_MESS_TELEGRAM_OPEN] = ACTION_TAP_DANCE_DOUBLE(LSFT(KC_F12), KC_F13),
-    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17)
+    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17),
+    [TD_CLAUDE_ITERM_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), LCA(KC_F16))
 };
 
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
@@ -95,6 +95,14 @@ static bool is_game_layer_active(void) {
 
 static bool is_cg_swapped(void) {
     return keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
+}
+
+static void set_cg_swapped(bool swapped) {
+    keymap_config.raw             = eeconfig_read_keymap();
+    keymap_config.swap_lctl_lgui  = swapped;
+    keymap_config.swap_rctl_rgui  = swapped;
+    eeconfig_update_keymap(keymap_config.raw);
+    clear_keyboard();
 }
 
 static void write_caps_led(bool on) {
@@ -191,20 +199,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
 
         case GAME_TOGGLE:
-            if (is_cg_swapped()) {
-                set_single_default_layer(_GAME);
+            if (!is_cg_swapped()) {
+                set_cg_swapped(true);
             }
-            return false;
-        case MC_ZED:
-            SEND_STRING("!zed ." SS_TAP(X_ENTER));
+            set_single_default_layer(_GAME);
             return false;
 
-        case MC_XO:
-            SEND_STRING("!xo ." SS_TAP(X_ENTER));
-            return false;
-
-        case MC_FORK:
-            SEND_STRING("!fork ." SS_TAP(X_ENTER));
+        case MACOS_BASE:
+            set_single_persistent_default_layer(_BASE);
+            set_cg_swapped(false);
             return false;
 
         case MC_TMUX_COMMAND:
@@ -245,7 +248,7 @@ Layer diagrams:
 
 [_FN]
 ,--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------+------.
-| Boot*  | Fetch  |  Pull  |  Push  | C-b:*  | Tests |       |      |!zed* | !xo* |!fork*|      |      |      |      |      |
+| Boot*  |        |        | Fetch  |  Pull  |  Push  | C-b:*  | Tests |      |      |      |      |      |      |      |      |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
 | CG*    |        |        | iTerm  |  Zed   | Xcode |       |      |      |      |      |      |      |     |       | Bri+ |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
@@ -260,7 +263,7 @@ Layer diagrams:
 ,--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------.
 |        |      |      |      |      |      |      |      |  1   |  2   |  3   |  4   |  5   |      |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|        |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |      |
+|  Mac   |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
 |  Base  |      |      |      |      |      |      |      | LSft |  A   |  S   |  D   | F                  |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
@@ -270,21 +273,22 @@ Layer diagrams:
 `--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
 
 Legend:
-Apps: Slack=C(F13), iTerm=LCA(F16), Zed=S(F17), Xcode=F17,
+Apps: Slack=C(F13), Claude=S(F16), iTerm=double LCA(F16), Zed=S(F17), Xcode=F17,
 Fork=LAG(F16), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
 Mail=S(F13), Things=A(F16), 1Pass=A(F7).
 Utilities: Fetch=S(A(G(F))), Pull=G(Down), Push=G(Up),
-C-b:=G(B) then S(;), Tests=LCAG(G), PrevSp=LAG(KC_QUOT),
+C-b:=G(B) then S(;), Tests=LCAG(G); all start two keys right of
+their former positions. PrevSp=LAG(KC_QUOT),
 NextSp=G(KC_QUOT), Dark=HYPR(F19).
-Macros: !zed="zed .", !xo="xo .", !fork="fork .".
 Combos shown inline: A+R=hold _FN, S+T={ or [ with Shift,
 N+E=} or ] with Shift, U+Y==, W+F=-, W+F+P=->,
 RGui+RAlt=G(S(P)), Esc+A=Backspace, Z+LSPO=Grave.
 Combos are disabled while _GAME is active.
 Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
-or G(L) when CG_TOGG is active; Game only sets _GAME as default when CG_TOGG
-is active; /? sends ? unshifted and / with Shift. Caps LED is on for CG_TOGG
-and blinks when CG_TOGG+_GAME.
+or G(L) when CG_TOGG is active; Game enables CG_TOGG if needed and sets _GAME
+as default; Mac persistently sets _BASE and disables CG_TOGG; /? sends ?
+unshifted and / with Shift. Caps LED is on for CG_TOGG and blinks when
+CG_TOGG+_GAME.
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -297,8 +301,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_FN] = LAYOUT_wired(
-        QK_BOOT, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, MC_ZED,  MC_XO,   MC_FORK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS,   KC_TRNS,     LCA(KC_F16), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
+        QK_BOOT,  KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        CG_TOGG, KC_TRNS,   KC_TRNS,     TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
         KC_TRNS, LAG(KC_QUOT),G(KC_QUOT),           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
@@ -306,7 +310,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_GAME] = LAYOUT_wired(
         KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_1,    KC_2,    KC_3,   KC_4,   KC_5, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
+        MACOS_BASE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
         DF(_BASE), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_A,    KC_S,    KC_D,    KC_TRNS, KC_F,    KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_K,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_LALT, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS,                   KC_SPC,                                      KC_M,    KC_L,             KC_SPC,  KC_LGUI, KC_TRNS

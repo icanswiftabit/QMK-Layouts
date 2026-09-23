@@ -25,10 +25,7 @@ enum layers {
 };
 
 enum custom_keycodes {
-    MC_ZED = SAFE_RANGE,
-    MC_XO,
-    MC_FORK,
-    MC_TMUX_COMMAND,
+    MC_TMUX_COMMAND = SAFE_RANGE,
     LOCK_SCREEN,
     GAME_TOGGLE,
     MACOS_BASE
@@ -36,7 +33,8 @@ enum custom_keycodes {
 
 enum tap_dances {
     TD_MESS_TELEGRAM_OPEN,
-    TD_XCODE_ZED_OPEN
+    TD_XCODE_ZED_OPEN,
+    TD_CLAUDE_ITERM_OPEN
 };
 
 enum combo_events {
@@ -75,7 +73,8 @@ combo_t key_combos[] = {
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_MESS_TELEGRAM_OPEN] = ACTION_TAP_DANCE_DOUBLE(LSFT(KC_F12), KC_F13),
-    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17)
+    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17),
+    [TD_CLAUDE_ITERM_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), LCA(KC_F16))
 };
 
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
@@ -247,18 +246,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             set_cg_swapped(false);
             return false;
 
-        case MC_ZED:
-            SEND_STRING("!zed ." SS_TAP(X_ENTER));
-            return false;
-
-        case MC_XO:
-            SEND_STRING("!xo ." SS_TAP(X_ENTER));
-            return false;
-
-        case MC_FORK:
-            SEND_STRING("!fork ." SS_TAP(X_ENTER));
-            return false;
-
         case MC_TMUX_COMMAND:
             tap_code16(G(KC_B));
             tap_code16(S(KC_SCLN));
@@ -292,10 +279,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_FN] = LAYOUT_65_ansi(
-        QK_BOOT, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS,
-        MC_ZED, MC_XO, MC_FORK, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS,
+        QK_BOOT, KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G),
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS,
         KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS, KC_TRNS, LCA(KC_F16), S(KC_F17), KC_F17, KC_TRNS, KC_TRNS,
+        CG_TOGG, KC_TRNS, KC_TRNS, TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS, C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,

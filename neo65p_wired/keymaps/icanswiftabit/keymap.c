@@ -33,8 +33,8 @@ enum custom_keycodes {
 
 enum tap_dances {
     TD_MESS_TELEGRAM_OPEN,
-    TD_XCODE_ZED_OPEN,
-    TD_CLAUDE_ITERM_OPEN
+    TD_XCODE_FORK_OPEN,
+    TD_CLAUDE_CHATGPT_OPEN
 };
 
 enum combo_events {
@@ -73,8 +73,8 @@ combo_t key_combos[] = {
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_MESS_TELEGRAM_OPEN] = ACTION_TAP_DANCE_DOUBLE(LSFT(KC_F12), KC_F13),
-    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17),
-    [TD_CLAUDE_ITERM_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), LCA(KC_F16))
+    [TD_XCODE_FORK_OPEN]     = ACTION_TAP_DANCE_DOUBLE(KC_F17, LAG(KC_F16)),
+    [TD_CLAUDE_CHATGPT_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), C(S(KC_F16)))
 };
 
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
@@ -250,9 +250,9 @@ Layer diagrams:
 ,--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------+------.
 | Boot*  |        |        | Fetch  |  Pull  |  Push  | C-b:*  | Tests |      |      |      |      |      |      |      |      |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-| CG*    |        |        | Cl/IT  |  Zed   | Xcode | Notes | GPT  |      |      |      |      |      |     |       | Bri+ |
+| CG*    |        |        | Cl/GPT |  Zed   | Xc/Fk |       |      |      |      |      |      |      |     |       | Bri+ |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-| Game*  |  A+R => _FN     | Slack  |  Fork  | Safari|       |      |      |      |      |      |                    | Bri- |
+| Game*  |  A+R => _FN     | Slack  | Notes  | Safari|       |      |      |      |      |      |                    | Bri- |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
 |                 |        | Msg/Tg |  Mail  | Things |1Pass |      |      |      |      |      | Ms1        | MsUp | Dark  |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
@@ -273,9 +273,9 @@ Layer diagrams:
 `--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
 
 Legend:
-Apps: Slack=C(F13), Claude/iTerm=tap S(F16)/double LCA(F16),
-Notes=G(F16), ChatGPT=C(S(F16)), Zed=S(F17), Xcode=F17,
-Fork=LAG(F16), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
+Apps: Slack=C(F13), Claude/ChatGPT=tap S(F16)/double C(S(F16)) (base F),
+Xcode/Fork=tap F17/double LAG(F16) (base G), Zed=S(F17),
+Notes=G(F16) (base T), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
 Mail=S(F13), Things=A(F16), 1Pass=A(F7).
 Utilities: Fetch=S(A(G(F))), Pull=G(Down), Push=G(Up),
 C-b:=G(B) then S(;), Tests=LCAG(G); all start two keys right of
@@ -303,8 +303,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FN] = LAYOUT_wired(
         QK_BOOT,  KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS,   KC_TRNS,     TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, G(KC_F16), C(S(KC_F16)), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
-        GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
+        CG_TOGG, KC_TRNS,   KC_TRNS,     TD(TD_CLAUDE_CHATGPT_OPEN), S(KC_F17), TD(TD_XCODE_FORK_OPEN), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
+        GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), G(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
         KC_TRNS, LAG(KC_QUOT),G(KC_QUOT),           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT
     ),

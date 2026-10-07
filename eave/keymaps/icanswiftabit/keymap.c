@@ -33,8 +33,8 @@ enum custom_keycodes {
 
 enum tap_dances {
     TD_MESS_TELEGRAM_OPEN,
-    TD_XCODE_ZED_OPEN,
-    TD_CLAUDE_ITERM_OPEN
+    TD_XCODE_FORK_OPEN,
+    TD_CLAUDE_CHATGPT_OPEN
 };
 
 enum combo_events {
@@ -73,8 +73,8 @@ combo_t key_combos[] = {
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_MESS_TELEGRAM_OPEN] = ACTION_TAP_DANCE_DOUBLE(LSFT(KC_F12), KC_F13),
-    [TD_XCODE_ZED_OPEN]     = ACTION_TAP_DANCE_DOUBLE(S(KC_F17), KC_F17),
-    [TD_CLAUDE_ITERM_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), LCA(KC_F16))
+    [TD_XCODE_FORK_OPEN]     = ACTION_TAP_DANCE_DOUBLE(KC_F17, LAG(KC_F16)),
+    [TD_CLAUDE_CHATGPT_OPEN]  = ACTION_TAP_DANCE_DOUBLE(S(KC_F16), C(S(KC_F16)))
 };
 
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
@@ -268,9 +268,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 /*
 _FN app shortcuts:
-Claude/iTerm=tap S(F16)/double LCA(F16), Zed=S(F17), Xcode=F17,
-Notes=G(F16) (base J), ChatGPT=C(S(F16)) (base L),
-Slack=C(F13), Fork=LAG(F16), Safari=C(F16),
+Claude/ChatGPT=tap S(F16)/double C(S(F16)) (base F),
+Xcode/Fork=tap F17/double LAG(F16) (base G), Zed=S(F17),
+Notes=G(F16) (base T), Slack=C(F13), Safari=C(F16),
 Messages/Telegram=tap S(F12)/double F13, Mail=S(F13),
 Things=A(F16), 1Password=A(F7).
 */
@@ -290,9 +290,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         QK_BOOT, KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G),
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS,
         KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS, KC_TRNS, TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, G(KC_F16), C(S(KC_F16)),
+        CG_TOGG, KC_TRNS, KC_TRNS, TD(TD_CLAUDE_CHATGPT_OPEN), S(KC_F17), TD(TD_XCODE_FORK_OPEN), KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
-        GAME_TOGGLE, KC_TRNS, KC_TRNS, C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS,
+        GAME_TOGGLE, KC_TRNS, KC_TRNS, C(KC_F13), G(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS, KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),

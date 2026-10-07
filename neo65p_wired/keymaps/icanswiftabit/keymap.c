@@ -250,7 +250,7 @@ Layer diagrams:
 ,--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------+------.
 | Boot*  |        |        | Fetch  |  Pull  |  Push  | C-b:*  | Tests |      |      |      |      |      |      |      |      |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
-| CG*    |        |        | iTerm  |  Zed   | Xcode |       |      |      |      |      |      |      |     |       | Bri+ |
+| CG*    |        |        | Cl/IT  |  Zed   | Xcode | Notes | GPT  |      |      |      |      |      |     |       | Bri+ |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
 | Game*  |  A+R => _FN     | Slack  |  Fork  | Safari|       |      |      |      |      |      |                    | Bri- |
 |--------+--------+--------+--------+--------+--------+------+------+------+------+------+------+------+------+------|------|
@@ -273,7 +273,8 @@ Layer diagrams:
 `--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
 
 Legend:
-Apps: Slack=C(F13), Claude=S(F16), iTerm=double LCA(F16), Zed=S(F17), Xcode=F17,
+Apps: Slack=C(F13), Claude/iTerm=tap S(F16)/double LCA(F16),
+Notes=G(F16), ChatGPT=C(S(F16)), Zed=S(F17), Xcode=F17,
 Fork=LAG(F16), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
 Mail=S(F13), Things=A(F16), 1Pass=A(F7).
 Utilities: Fetch=S(A(G(F))), Pull=G(Down), Push=G(Up),
@@ -302,7 +303,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FN] = LAYOUT_wired(
         QK_BOOT,  KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS,   KC_TRNS,     TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
+        CG_TOGG, KC_TRNS,   KC_TRNS,     TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, G(KC_F16), C(S(KC_F16)), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS,   C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,
         KC_TRNS,  KC_TRNS,   KC_TRNS, TD(TD_MESS_TELEGRAM_OPEN), S(KC_F13), A(KC_F16), A(KC_F7), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_MS_BTN1, KC_MS_UP, HYPR(KC_F19),
         KC_TRNS, LAG(KC_QUOT),G(KC_QUOT),           KC_ENT,                                 KC_TRNS, KC_TRNS,            KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT

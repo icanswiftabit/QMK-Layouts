@@ -266,6 +266,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+/*
+_FN app shortcuts:
+Claude/iTerm=tap S(F16)/double LCA(F16), Zed=S(F17), Xcode=F17,
+Notes=G(F16) (base J), ChatGPT=C(S(F16)) (base L),
+Slack=C(F13), Fork=LAG(F16), Safari=C(F16),
+Messages/Telegram=tap S(F12)/double F13, Mail=S(F13),
+Things=A(F16), 1Password=A(F7).
+*/
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_65_ansi(
         LOCK_SCREEN, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7,KC_8, KC_9, KC_0, KC_MPLY, KC_MNXT, KC_BSPC, KC_NO,KC_NO, KC_NO,
@@ -282,7 +290,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         QK_BOOT, KC_TRNS, KC_TRNS, S(A(G(KC_F))), G(KC_DOWN), G(KC_UP), MC_TMUX_COMMAND, LCAG(KC_G),
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_TRNS,
         KC_TRNS, KC_TRNS,
-        CG_TOGG, KC_TRNS, KC_TRNS, TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, KC_TRNS, KC_TRNS,
+        CG_TOGG, KC_TRNS, KC_TRNS, TD(TD_CLAUDE_ITERM_OPEN), S(KC_F17), KC_F17, G(KC_F16), C(S(KC_F16)),
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRIU,
         GAME_TOGGLE, KC_TRNS, KC_TRNS, C(KC_F13), LAG(KC_F16), C(KC_F16), KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_BRID,

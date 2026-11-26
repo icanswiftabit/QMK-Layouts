@@ -29,6 +29,9 @@ enum custom_keycodes {
   LOCK_SCREEN,
   FLIP_TABLE,
   PUT_TABLE,
+  CLAUDE_ZED,
+  CLAUDE_XCODE,
+  CLAUDE_FORK,
 };
 
 enum tap_dance_codes {
@@ -36,6 +39,7 @@ enum tap_dance_codes {
   DANCE_1,
   DANCE_2,
   DANCE_3,
+  DANCE_4,
 };
 
 // Default keymap. This can be changed in Vial. Use oled.c to change beavior that Vial cannot change.
@@ -53,9 +57,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [1] = LAYOUT(
   S(A(G(KC_F))), LCAG(KC_G), HYPR(KC_G), LALT(LCTL(KC_LEFT)),LALT(LCTL(KC_RIGHT)),LALT(KC_F7),                     KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK,_______, _______, _______, _______,
-  LGUI(KC_UP),   LALT(LGUI(KC_QUOTE)),LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),   LGUI(KC_QUOTE), TD(DANCE_0),                      KC_MS_BTN1, KC_MS_LEFT, KC_MS_DOWN, KC_MS_UP, KC_MS_RIGHT, KC_MS_BTN2,
+  LGUI(KC_UP),   LALT(LGUI(KC_QUOTE)),LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),   LGUI(KC_QUOTE), TD(DANCE_0),                      MS_BTN1, MS_LEFT, MS_DOWN, MS_UP, MS_RGHT, MS_BTN2,
   LGUI(KC_DOWN),   LCTL(KC_F16),   TD(DANCE_1),    TD(DANCE_2),    TD(DANCE_3),    LSFT(KC_F13),                      _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
-  _______,  _______, _______, _______, _______, LALT(KC_F16),                      _______,    _______, _______,  _______, _______,  _______,
+  _______,  _______, _______, _______, _______, TD(DANCE_4),                      _______, CLAUDE_ZED, CLAUDE_XCODE, CLAUDE_FORK, _______,  _______,
   KC_MICLOCK, _______,_______,_______,_______, _______,      _______,  _______, _______, _______, _______,
                                                               _______, _______, _______, _______, _______
 ),
@@ -101,12 +105,13 @@ enum combo_events {
   BACKSPACE_COMBO,
   BACK_HISTORY_COMBO,
   FORWARD_HISTORY_COMBO,
-  LLM_WINDOW_COMOBO
+  LLM_WINDOW_COMOBO,
+  GRAVE_COMBO,
 };
 
 const uint16_t PROGMEM minus_combo[] = { KC_W, KC_F, COMBO_END};
 const uint16_t PROGMEM equal_combo[] = { KC_U, KC_Y, COMBO_END};
-const uint16_t PROGMEM arrow_combo[] = { KC_W, KC_F, KC_P, COMBO_END};       
+const uint16_t PROGMEM arrow_combo[] = { KC_W, KC_F, KC_P, COMBO_END};
 const uint16_t PROGMEM lbrc_combo[] = { KC_S, KC_T, COMBO_END};
 const uint16_t PROGMEM rbrc_combo[] = { KC_N, KC_E, COMBO_END};
 const uint16_t PROGMEM spotlight_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, COMBO_END};
@@ -114,6 +119,7 @@ const uint16_t PROGMEM backspace_combo[] = { KC_ESCAPE, KC_A, COMBO_END};
 const uint16_t PROGMEM back_history_combo[] = { KC_Z, KC_X, COMBO_END};
 const uint16_t PROGMEM forward_history_combo[] = { KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM llm_window_combo[] = { LGUI(LSFT(KC_P)), KC_RALT, KC_RGUI, COMBO_END};
+const uint16_t PROGMEM grave_combo[] = { KC_Q, KC_W, COMBO_END};
 
 combo_t key_combos[] = {
     [MINUS_COMBO] = COMBO_ACTION(minus_combo),
@@ -125,13 +131,14 @@ combo_t key_combos[] = {
     [BACKSPACE_COMBO] = COMBO_ACTION(backspace_combo),
     [BACK_HISTORY_COMBO] = COMBO_ACTION(back_history_combo),
     [FORWARD_HISTORY_COMBO] = COMBO_ACTION(forward_history_combo),
-    [LLM_WINDOW_COMOBO] = COMBO_ACTION(llm_window_combo)
+    [LLM_WINDOW_COMOBO] = COMBO_ACTION(llm_window_combo),
+    [GRAVE_COMBO] = COMBO_ACTION(grave_combo)
 };
 
 uint8_t mod_state;
 bool isSwapped;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  mod_state = get_mods(); 
+  mod_state = get_mods();
   switch (keycode) {
     case LOCK_SCREEN:
         isSwapped = keymap_config.swap_lctl_lgui || keymap_config.swap_rctl_rgui;
@@ -143,6 +150,44 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return false;
+
+    case CLAUDE_ZED:
+        if (record->event.pressed) {
+            // SEND_STRING("!zed .");
+            tap_code16(S(KC_1));
+            tap_code16(KC_Z);
+            tap_code16(KC_E);
+            tap_code16(KC_D);
+            tap_code16(KC_SPACE);
+            tap_code16(KC_DOT);
+            tap_code16(KC_ENTER);
+        }
+        return false;
+
+    case CLAUDE_XCODE:
+        if (record->event.pressed) {
+            tap_code16(S(KC_1));
+            tap_code16(KC_X);
+            tap_code16(KC_O);
+            tap_code16(KC_SPACE);
+            tap_code16(KC_DOT);
+            tap_code16(KC_ENTER);
+        }
+        return false;
+
+    case CLAUDE_FORK:
+        if (record->event.pressed) {
+            tap_code16(S(KC_1));
+            tap_code16(KC_F);
+            tap_code16(KC_O);
+            tap_code16(KC_R);
+            tap_code16(KC_K);
+            tap_code16(KC_SPACE);
+            tap_code16(KC_DOT);
+            tap_code16(KC_ENTER);
+        }
+        return false;
+
 
     case KC_SLSH:
         if (record->event.pressed) {
@@ -206,7 +251,7 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
     }
     break;
 
-  case BACKSPACE_COMBO: 
+  case BACKSPACE_COMBO:
     if (pressed) {
       tap_code16(KC_BSPC);
     }
@@ -227,6 +272,11 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         tap_code16(KC_F18);
     }
     break;
+  case GRAVE_COMBO:
+    if (pressed) {
+        tap_code16(KC_GRV);
+    }
+    break;
   }
 }
 
@@ -245,7 +295,7 @@ enum {
     MORE_TAPS
 };
 
-static tap dance_state[4];
+static tap dance_state[5];
 
 uint8_t dance_step(tap_dance_state_t *state);
 
@@ -260,7 +310,6 @@ uint8_t dance_step(tap_dance_state_t *state) {
     }
     return MORE_TAPS;
 }
-
 
 void on_dance_0(tap_dance_state_t *state, void *user_data);
 void dance_0_finished(tap_dance_state_t *state, void *user_data);
@@ -395,9 +444,44 @@ void dance_3_reset(tap_dance_state_t *state, void *user_data) {
     dance_state[3].step = 0;
 }
 
+void on_dance_4(tap_dance_state_t *state, void *user_data);
+void dance_4_finished(tap_dance_state_t *state, void *user_data);
+void dance_4_reset(tap_dance_state_t *state, void *user_data);
+
+void on_dance_4(tap_dance_state_t *state, void *user_data) {
+    if(state->count == 3) {
+        tap_code16(LALT(KC_F16));
+        tap_code16(LALT(KC_F16));
+        tap_code16(LALT(KC_F16));
+    }
+    if(state->count > 3) {
+        tap_code16(LALT(KC_F16));
+    }
+}
+
+void dance_4_finished(tap_dance_state_t *state, void *user_data) {
+    dance_state[4].step = dance_step(state);
+    switch (dance_state[4].step) {
+        case SINGLE_TAP: tap_code16(LCTL(LALT(KC_F16))); break;
+        case DOUBLE_TAP: register_code16(LALT(KC_F16)); break;
+        case DOUBLE_SINGLE_TAP: tap_code16(LALT(KC_F16)); register_code16(LALT(KC_F16));
+    }
+}
+
+void dance_4_reset(tap_dance_state_t *state, void *user_data) {
+    wait_ms(10);
+    switch (dance_state[4].step) {
+        case DOUBLE_TAP: unregister_code16(LALT(KC_F16)); break;
+        case DOUBLE_SINGLE_TAP: unregister_code16(LALT(KC_F16)); break;
+    }
+    dance_state[4].step = 0;
+}
+
+
 tap_dance_action_t tap_dance_actions[] = {
         [DANCE_0] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_0, dance_0_finished, dance_0_reset),
         [DANCE_1] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_1, dance_1_finished, dance_1_reset),
         [DANCE_2] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_2, dance_2_finished, dance_2_reset),
         [DANCE_3] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_3, dance_3_finished, dance_3_reset),
+        [DANCE_4] = ACTION_TAP_DANCE_FN_ADVANCED(on_dance_4, dance_4_finished, dance_4_reset),
 };

@@ -81,13 +81,17 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
 }
 
 static uint8_t mod_state;
-static int8_t status_led_state = -1;
+static int16_t status_led_value = -1;
 
 enum {
-    STATUS_LED_BLINK_PERIOD_MS = 1000,
-    STATUS_LED_BLINK_ON_MS     = 125,
-    STATUS_LED_BLINK_GAP_MS    = 125,
-    STATUS_RGBLED_INDEX        = 10
+    STATUS_LED_BREATH_PERIOD_MS = 2000,
+    STATUS_LED_LEVEL_MAX        = 255,
+    STATUS_LED_LEVEL_FLOOR      = 12,
+    STATUS_LED_KICK_LEVEL       = 90,
+    STATUS_LED_KICK_DECAY_MS    = 400,
+    STATUS_RGBLED_MAX_VAL       = 128,
+    STATUS_RGBLED_FINE_VAL      = 32,
+    STATUS_RGBLED_INDEX         = 10
 };
 
 void keyboard_pre_init_user(void) {
@@ -117,18 +121,61 @@ static void set_cg_swapped(bool swapped) {
     clear_keyboard();
 }
 
-static void write_status_led(bool on) {
-    if (status_led_state == on) {
+static void write_status_led(uint8_t level) {
+    uint8_t value = 0;
+
+    // The floor matches Neo65, whose dithered LED goes dark below it.
+    if (level >= STATUS_LED_LEVEL_FLOOR) {
+        value = level * STATUS_RGBLED_MAX_VAL / STATUS_LED_LEVEL_MAX;
+
+        // Steps of 4 cap strip refreshes, since each one blocks interrupts while all 25 LEDs are
+        // clocked out; near the bottom single steps stay because a jump of 4 reads as a stutter.
+        if (value >= STATUS_RGBLED_FINE_VAL) {
+            value &= ~3;
+        }
+    }
+
+    if (status_led_value == value) {
         return;
     }
 
-    if (on) {
-        rgblight_sethsv_at(0, 0, 128, STATUS_RGBLED_INDEX);
-    } else {
-        rgblight_sethsv_at(0, 0, 0, STATUS_RGBLED_INDEX);
-    }
+    rgblight_sethsv_at(0, 0, value, STATUS_RGBLED_INDEX);
+    status_led_value = value;
+}
 
-    status_led_state = on;
+static uint8_t breath_level(void) {
+    uint32_t phase  = timer_read32() % STATUS_LED_BREATH_PERIOD_MS;
+    uint32_t half   = STATUS_LED_BREATH_PERIOD_MS / 2;
+    uint32_t ramp   = phase < half ? phase : STATUS_LED_BREATH_PERIOD_MS - phase;
+    uint32_t linear = ramp * STATUS_LED_LEVEL_MAX / half;
+
+    // A linear duty cycle looks bright for most of the period; squaring makes the swell look even.
+    uint32_t swell = linear * linear / STATUS_LED_LEVEL_MAX;
+
+    // Bottoming out at the floor instead of zero avoids a visible pop where the LED would cut out.
+    return STATUS_LED_LEVEL_FLOOR +
+           swell * (STATUS_LED_LEVEL_MAX - STATUS_LED_LEVEL_FLOOR) / STATUS_LED_LEVEL_MAX;
+}
+
+static uint32_t status_led_excitation;
+static uint32_t status_led_excitation_timer;
+
+static void excite_status_led(void) {
+    status_led_excitation = MIN(status_led_excitation + (STATUS_LED_KICK_LEVEL << 8),
+                                (uint32_t)STATUS_LED_LEVEL_MAX << 8);
+}
+
+static uint8_t excitation_level(void) {
+    uint32_t elapsed = timer_elapsed32(status_led_excitation_timer);
+
+    // Scans often run faster than 1 ms; advancing by whole elapsed ms keeps the leftover fraction.
+    status_led_excitation_timer += elapsed;
+
+    // Held in 1/256 units because one millisecond of decay is less than one brightness step.
+    uint32_t decay = elapsed * ((uint32_t)STATUS_LED_LEVEL_MAX << 8) / STATUS_LED_KICK_DECAY_MS;
+    status_led_excitation = status_led_excitation > decay ? status_led_excitation - decay : 0;
+
+    return status_led_excitation >> 8;
 }
 
 static void update_status_led(void) {
@@ -136,21 +183,18 @@ static void update_status_led(void) {
     bool game = is_game_layer_active();
 
     if (cg && game) {
-        uint16_t elapsed = timer_read() % STATUS_LED_BLINK_PERIOD_MS;
-        write_status_led(elapsed < STATUS_LED_BLINK_ON_MS ||
-                         (elapsed >= STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS &&
-                          elapsed < 2 * STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS));
+        write_status_led(MIN(breath_level() + excitation_level(), STATUS_LED_LEVEL_MAX));
     } else if (cg) {
-        write_status_led(true);
+        write_status_led(STATUS_LED_LEVEL_MAX);
     } else {
-        write_status_led(false);
+        write_status_led(0);
     }
 }
 
 static void initialize_status_led(void) {
     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     rgblight_sethsv_range(0, 0, 0, 0, RGBLIGHT_LED_COUNT);
-    status_led_state = -1;
+    status_led_value = -1;
     update_status_led();
 }
 
@@ -221,6 +265,10 @@ bool isSwapped;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
         return true;
+    }
+
+    if (is_game_layer_active()) {
+        excite_status_led();
     }
 
     switch (keycode) {
@@ -308,8 +356,8 @@ Combos are disabled while _GAME is active.
 Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
 or G(L) when CG_TOGG is active; Game enables CG_TOGG if needed and sets _GAME
 as default.
-Status LED (RGB LED index 10) is on for CG_TOGG and blinks when
-CG_TOGG+_GAME.
+Status LED (RGB LED index 10) is on for CG_TOGG; with CG_TOGG+_GAME it breathes
+smoothly between a dim glow and full (2 s cycle); each key press there kicks it brighter for ~0.4 s.
 Eave differences from Neo65: no ISO key left of Z; 2.25u Enter replaces ISO
 Enter; the Bspc position is NO on _FN and _GAME; the split-Bspc and Del
 matrix positions are NO.

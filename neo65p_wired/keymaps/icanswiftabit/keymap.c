@@ -83,9 +83,11 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
 static uint8_t mod_state;
 
 enum {
-    STATUS_LED_BLINK_PERIOD_MS = 1000,
-    STATUS_LED_BLINK_ON_MS     = 125,
-    STATUS_LED_BLINK_GAP_MS    = 125
+    STATUS_LED_BREATH_PERIOD_MS = 2000,
+    STATUS_LED_LEVEL_MAX        = 255,
+    STATUS_LED_LEVEL_FLOOR      = 12,
+    STATUS_LED_KICK_LEVEL       = 90,
+    STATUS_LED_KICK_DECAY_MS    = 400
 };
 
 static bool is_game_layer_active(void) {
@@ -110,15 +112,67 @@ static void write_caps_led(bool on) {
 #endif
 }
 
+static void write_caps_led_level(uint8_t level) {
+    static uint16_t accumulator;
+
+    // Below the floor the dithered pulses get sparse enough to read as flicker.
+    if (level < STATUS_LED_LEVEL_FLOOR) {
+        accumulator = 0;
+        write_caps_led(false);
+        return;
+    }
+
+    // C13 has no timer channel for hardware PWM, so brightness is sigma-delta dithered once per scan.
+    accumulator += level;
+    if (accumulator >= STATUS_LED_LEVEL_MAX) {
+        accumulator -= STATUS_LED_LEVEL_MAX;
+        write_caps_led(true);
+    } else {
+        write_caps_led(false);
+    }
+}
+
+static uint8_t breath_level(void) {
+    uint32_t phase  = timer_read32() % STATUS_LED_BREATH_PERIOD_MS;
+    uint32_t half   = STATUS_LED_BREATH_PERIOD_MS / 2;
+    uint32_t ramp   = phase < half ? phase : STATUS_LED_BREATH_PERIOD_MS - phase;
+    uint32_t linear = ramp * STATUS_LED_LEVEL_MAX / half;
+
+    // A linear duty cycle looks bright for most of the period; squaring makes the swell look even.
+    uint32_t swell = linear * linear / STATUS_LED_LEVEL_MAX;
+
+    // Bottoming out at the floor instead of zero avoids a visible pop where the LED would cut out.
+    return STATUS_LED_LEVEL_FLOOR +
+           swell * (STATUS_LED_LEVEL_MAX - STATUS_LED_LEVEL_FLOOR) / STATUS_LED_LEVEL_MAX;
+}
+
+static uint32_t status_led_excitation;
+static uint32_t status_led_excitation_timer;
+
+static void excite_status_led(void) {
+    status_led_excitation = MIN(status_led_excitation + (STATUS_LED_KICK_LEVEL << 8),
+                                (uint32_t)STATUS_LED_LEVEL_MAX << 8);
+}
+
+static uint8_t excitation_level(void) {
+    uint32_t elapsed = timer_elapsed32(status_led_excitation_timer);
+
+    // Scans often run faster than 1 ms; advancing by whole elapsed ms keeps the leftover fraction.
+    status_led_excitation_timer += elapsed;
+
+    // Held in 1/256 units because one millisecond of decay is less than one brightness step.
+    uint32_t decay = elapsed * ((uint32_t)STATUS_LED_LEVEL_MAX << 8) / STATUS_LED_KICK_DECAY_MS;
+    status_led_excitation = status_led_excitation > decay ? status_led_excitation - decay : 0;
+
+    return status_led_excitation >> 8;
+}
+
 static void update_status_led(void) {
     bool cg   = is_cg_swapped();
     bool game = is_game_layer_active();
 
     if (cg && game) {
-        uint16_t elapsed = timer_read() % STATUS_LED_BLINK_PERIOD_MS;
-        write_caps_led(elapsed < STATUS_LED_BLINK_ON_MS ||
-                       (elapsed >= STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS &&
-                        elapsed < 2 * STATUS_LED_BLINK_ON_MS + STATUS_LED_BLINK_GAP_MS));
+        write_caps_led_level(MIN(breath_level() + excitation_level(), STATUS_LED_LEVEL_MAX));
     } else if (cg) {
         write_caps_led(true);
     } else {
@@ -185,6 +239,10 @@ bool isSwapped;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) {
         return true;
+    }
+
+    if (is_game_layer_active()) {
+        excite_status_led();
     }
 
     switch (keycode) {
@@ -271,7 +329,8 @@ Combos are disabled while _GAME is active.
 Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
 or G(L) when CG_TOGG is active; Game enables CG_TOGG if needed and sets _GAME
 as default.
-Caps LED is on for CG_TOGG and blinks when CG_TOGG+_GAME.
+Caps LED is on for CG_TOGG; with CG_TOGG+_GAME it breathes smoothly
+between a dim glow and full (2 s cycle, software PWM); each key press there kicks it brighter for ~0.4 s.
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {

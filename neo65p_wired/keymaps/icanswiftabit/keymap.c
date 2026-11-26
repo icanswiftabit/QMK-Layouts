@@ -27,8 +27,7 @@ enum layers {
 enum custom_keycodes {
     MC_TMUX_COMMAND = SAFE_RANGE,
     LOCK_SCREEN,
-    GAME_TOGGLE,
-    MACOS_BASE
+    GAME_TOGGLE
 };
 
 enum tap_dances {
@@ -205,25 +204,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             set_single_default_layer(_GAME);
             return false;
 
-        case MACOS_BASE:
-            set_single_persistent_default_layer(_BASE);
-            set_cg_swapped(false);
-            return false;
-
         case MC_TMUX_COMMAND:
             tap_code16(G(KC_B));
             tap_code16(S(KC_SCLN));
-            return false;
-
-        case KC_SLSH:
-            mod_state = get_mods();
-            if (mod_state & MOD_MASK_SHIFT) {
-                del_mods(MOD_MASK_SHIFT);
-                tap_code16(KC_SLSH);
-                set_mods(mod_state);
-            } else {
-                tap_code16(S(KC_SLSH));
-            }
             return false;
     }
 
@@ -241,7 +224,7 @@ Layer diagrams:
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
 | Esc+A  | A+R  | R+FN |  S{  |  T{  |  D   |  H   |  N}  |  E}  |  I   |  O   |  '   | Enter              | Vol- |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|    LSPO+`     |  Z`  |  X   |  C   |  V   |  B   |  K   |  M   |  ,   |  .   | ?//  | RSPC        |  Up  | Mute |
+|    LSPO+`     |  Z`  |  X   |  C   |  V   |  B   |  K   |  M   |  ,   |  .   |  /   | RSPC        |  Up  | Mute |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
 | LCtrl  | LAlt   | LGui   |     Space                      | RGui+P | RAlt+P |        | Left   | Down   | Right  |
 `--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
@@ -263,7 +246,7 @@ Layer diagrams:
 ,--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------.
 |        |      |      |      |      |      |      |      |  1   |  2   |  3   |  4   |  5   |      |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
-|  Mac   |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |      |
+|  Tab   |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |  T   |      |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
 |  Base  |      |      |      |      |      |      |      | LSft |  A   |  S   |  D   | F                  |      |
 |--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|------|
@@ -287,9 +270,8 @@ RGui+RAlt=G(S(P)), Esc+A=Backspace, Z+LSPO=Grave.
 Combos are disabled while _GAME is active.
 Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
 or G(L) when CG_TOGG is active; Game enables CG_TOGG if needed and sets _GAME
-as default; Mac persistently sets _BASE and disables CG_TOGG; /? sends ?
-unshifted and / with Shift. Caps LED is on for CG_TOGG and blinks when
-CG_TOGG+_GAME.
+as default.
+Caps LED is on for CG_TOGG and blinks when CG_TOGG+_GAME.
 */
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -311,7 +293,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_GAME] = LAYOUT_wired(
         KC_TRNS,   KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_1,    KC_2,    KC_3,   KC_4,   KC_5, KC_TRNS, KC_TRNS, KC_TRNS,
-        MACOS_BASE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
+        KC_TAB,     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,  KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_TRNS,
         DF(_BASE), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LSFT, KC_A,    KC_S,    KC_D,    KC_TRNS, KC_F,    KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_K,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_LALT, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS,                   KC_SPC,                                      KC_M,    KC_L,             KC_SPC,  KC_LGUI, KC_TRNS

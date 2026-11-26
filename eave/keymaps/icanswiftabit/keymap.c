@@ -27,8 +27,7 @@ enum layers {
 enum custom_keycodes {
     MC_TMUX_COMMAND = SAFE_RANGE,
     LOCK_SCREEN,
-    GAME_TOGGLE,
-    MACOS_BASE
+    GAME_TOGGLE
 };
 
 enum tap_dances {
@@ -241,25 +240,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             set_single_default_layer(_GAME);
             return false;
 
-        case MACOS_BASE:
-            set_single_persistent_default_layer(_BASE);
-            set_cg_swapped(false);
-            return false;
-
         case MC_TMUX_COMMAND:
             tap_code16(G(KC_B));
             tap_code16(S(KC_SCLN));
-            return false;
-
-        case KC_SLSH:
-            mod_state = get_mods();
-            if (mod_state & MOD_MASK_SHIFT) {
-                del_mods(MOD_MASK_SHIFT);
-                tap_code16(KC_SLSH);
-                set_mods(mod_state);
-            } else {
-                tap_code16(S(KC_SLSH));
-            }
             return false;
     }
 
@@ -267,12 +250,69 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 /*
-_FN app shortcuts:
-Claude/ChatGPT=tap S(F16)/double C(S(F16)) (base F),
+Layer diagrams (ANSI port of neo65p_wired icanswiftabit; keys sit in the same
+physical positions as on Neo65):
+
+[_BASE]
+,--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------.
+| LockQ* |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |  9   |  0   | MPLY | MNXT |    Bspc     |  NO  |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------|
+|  Tab   |  Q   |  W-  |  F-  | P->  |  G   |  J   |  L   |  U=  |  Y=  |  ;   |  NO  |  NO  |     \       | Vol+ |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------|
+| Esc+A  | A+R  | R+FN |  S{  |  T{  |  D   |  H   |  N}  |  E}  |  I   |  O   |  '   |       Enter        | Vol- |
+|--------+------+------+------+------+------+------+------+------+------+------+------+--------------------+------|
+|    LSPO+`     |  Z`  |  X   |  C   |  V   |  B   |  K   |  M   |  ,   |  .   |  /   |    RSPC     |  Up  | Mute |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|
+| LCtrl  | LAlt   | LGui   |     Space                      | RGui+P | RAlt+P |        | Left   | Down   | Right  |
+`--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
+
+[_FN]
+,--------+--------+--------+--------+--------+--------+--------+-------+------+------+------+------+------+-------------+------.
+| Boot*  |        |        | Fetch  |  Pull  |  Push  | C-b:*  | Tests |      |      |      |      |      |     NO      |      |
+|--------+--------+--------+--------+--------+--------+--------+-------+------+------+------+------+------+-------------+------|
+| CG*    |        |        | Cl/GPT |  Zed   | Xc/Fk  |        |       |      |      |      |      |      |             | Bri+ |
+|--------+--------+--------+--------+--------+--------+--------+-------+------+------+------+------+--------------------+------|
+| Game*  |  A+R => _FN     | Slack  | Notes  | Safari |        |       |      |      |      |      |                    | Bri- |
+|--------+--------+--------+--------+--------+--------+--------+-------+------+------+------+------+-------------+------+------|
+|                 |        | Msg/Tg |  Mail  | Things | 1Pass  |       |      |      |      |      |    Ms1      | MsUp | Dark |
+|--------+--------+--------+--------+--------+--------+--------+-------+------+------+------+------+------+------+------+------|
+|        | PrevSp | NextSp |     Enter                                |        |        |        | MsLft  | MsDwn  | MsRgt  |
+`--------+--------+--------+---------------------------------------------------+--------+--------+--------+--------+--------'
+
+[_GAME]
+,--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------.
+|        |      |      |      |      |      |      |      |  1   |  2   |  3   |  4   |  5   |     NO      |      |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------|
+|  Tab   |      |      |      |      |      |      | Esc  | Tab  |  Q   |  W   |  E   |  R   |     T       |      |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+-------------+------|
+|  Base  |      |      |      |      |      |      |      | LSft |  A   |  S   |  D   |         F          |      |
+|--------+------+------+------+------+------+------+------+------+------+------+------+--------------------+------|
+|               |      |      |      |      |      |  K   |  Z   |  X   |  C   |  V   |      B      | LAlt |      |
+|--------+------+------+------+------+------+------+------+------+------+------+------+------+------+------+------|
+|        |        |        |     Space                      |   M    |   L    |        | Space  | LGui   |        |
+`--------+--------+--------+-----------------------------------------+--------+--------+--------+--------+--------'
+
+Legend:
+Apps: Slack=C(F13), Claude/ChatGPT=tap S(F16)/double C(S(F16)) (base F),
 Xcode/Fork=tap F17/double LAG(F16) (base G), Zed=S(F17),
-Notes=G(F16) (base T), Slack=C(F13), Safari=C(F16),
-Messages/Telegram=tap S(F12)/double F13, Mail=S(F13),
-Things=A(F16), 1Password=A(F7).
+Notes=G(F16) (base T), Safari=C(F16), Msg/Tg=tap S(F12)/double F13,
+Mail=S(F13), Things=A(F16), 1Pass=A(F7).
+Utilities: Fetch=S(A(G(F))), Pull=G(Down), Push=G(Up),
+C-b:=G(B) then S(;), Tests=LCAG(G); all start two keys right of
+their former positions. PrevSp=LAG(KC_QUOT),
+NextSp=G(KC_QUOT), Dark=HYPR(F19).
+Combos shown inline: A+R=hold _FN, S+T={ or [ with Shift,
+N+E=} or ] with Shift, U+Y==, W+F=-, W+F+P=->,
+RGui+RAlt=G(S(P)), Esc+A=Backspace, Z+LSPO=Grave.
+Combos are disabled while _GAME is active.
+Custom processing: * marks custom/QMK-side behavior. LockQ=C(G(Q)) normally
+or G(L) when CG_TOGG is active; Game enables CG_TOGG if needed and sets _GAME
+as default.
+Status LED (RGB LED index 10) is on for CG_TOGG and blinks when
+CG_TOGG+_GAME.
+Eave differences from Neo65: no ISO key left of Z; 2.25u Enter replaces ISO
+Enter; the Bspc position is NO on _FN and _GAME; the split-Bspc and Del
+matrix positions are NO.
 */
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_65_ansi(
@@ -304,7 +344,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_1, KC_2, KC_3, KC_4, KC_5, KC_NO, KC_TRNS,
         KC_TRNS, KC_TRNS,
-        MACOS_BASE, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,
+        KC_TAB,     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_ESC,
         KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_TRNS,
         DF(_BASE), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
         KC_LSFT, KC_A, KC_S, KC_D, KC_F, KC_TRNS,
